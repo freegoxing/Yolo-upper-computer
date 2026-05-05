@@ -1,3 +1,7 @@
 .idea
 .venv
 img
+
+**/__pycache__/
+*.pyo
+*.pyc
