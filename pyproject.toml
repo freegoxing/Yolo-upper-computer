@@ -16,6 +16,10 @@ url = "https://pypi.mirrors.ustc.edu.cn/simple/"
 line-length = 88
 target-version = "py313"
 
+extend-exclude = [
+    "src/ui/home.py",
+    "src/ui/resources.py",
+]
 [tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors

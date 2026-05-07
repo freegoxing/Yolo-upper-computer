@@ -1,4 +1,5 @@
-from PySide6.QtCore import Qt, QTimer, QEvent
+from PySide6.QtCore import QEvent, Qt, QTimer
+
 
 class UIFunctions:
     GLOBAL_STATE = False
@@ -7,10 +8,10 @@ class UIFunctions:
     def uiDefinitions(self):
         # 1. 关闭按钮
         self.close_button.clicked.connect(lambda: self.close())
-        
+
         # 2. 最小化按钮
         self.min_sf.clicked.connect(lambda: self.showMinimized())
-        
+
         # 3. 最大化按钮
         self.max_sf.clicked.connect(lambda: UIFunctions.maximize_restore(self))
 
@@ -19,14 +20,17 @@ class UIFunctions:
         def moveWindow(event):
             if UIFunctions.GLOBAL_STATE:
                 UIFunctions.maximize_restore(self)
-                
+
             if event.buttons() == Qt.LeftButton:
-                if hasattr(self, 'dragPos'):
-                    self.move(self.pos() + event.globalPosition().toPoint() - self.dragPos)
+                if hasattr(self, "dragPos"):
+                    self.move(
+                        self.pos() + event.globalPosition().toPoint() - self.dragPos
+                    )
                     self.dragPos = event.globalPosition().toPoint()
                 event.accept()
 
-        if hasattr(self, 'dragPos'):
+        if hasattr(self, "dragPos"):
+
             def topMousePress(event):
                 self.dragPos = event.globalPosition().toPoint()
 
