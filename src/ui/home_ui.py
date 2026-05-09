@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDoubleSpinBo
     QLayout, QMainWindow, QProgressBar, QPushButton,
     QSizePolicy, QSlider, QSpacerItem, QSpinBox,
     QSplitter, QStackedWidget, QVBoxLayout, QWidget)
-import resources
+import resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -137,29 +137,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.verticalLayout_5.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
-        self.src_file_button = QPushButton(self.MenuBox)
-        self.src_file_button.setObjectName(u"src_file_button")
-        self.src_file_button.setMinimumSize(QSize(0, 45))
-        self.src_file_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.src_file_button.setStyleSheet(u"QPushButton{\n"
-"background-image: url(:/all/img/file.png);\n"
-"background-repeat: no-repeat;\n"
-"background-position: left center;\n"
-"border: none;\n"
-"border-left: 23px solid transparent;\n"
-"\n"
-"text-align: center;\n"
-"padding-left: 0px;\n"
-"color: rgba(255, 255, 255, 199);\n"
-"font: 700 12pt \"Nirmala UI\";\n"
-"}\n"
-"\n"
-"QPushButton:hover{\n"
-"background-color: rgba(114, 129, 214, 59);\n"
-"}")
-
-        self.verticalLayout_5.addWidget(self.src_file_button)
-
         self.src_cam_button = QPushButton(self.MenuBox)
         self.src_cam_button.setObjectName(u"src_cam_button")
         self.src_cam_button.setMinimumSize(QSize(0, 45))
@@ -212,7 +189,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addItem(self.verticalSpacer)
 
-        self.verticalLayout_5.setStretch(0, 1)
 
         self.verticalLayout_2.addWidget(self.MenuBox)
 
@@ -2789,7 +2765,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.ToggleBotton.setText(QCoreApplication.translate("MainWindow", u"\u9690\u85cf\u8fb9\u680f", None))
-        self.src_file_button.setText(QCoreApplication.translate("MainWindow", u"\u52a0\u8f7d\u6587\u4ef6", None))
         self.src_cam_button.setText(QCoreApplication.translate("MainWindow", u"\u6444\u50cf\u5934", None))
         self.src_rtsp_button.setText(QCoreApplication.translate("MainWindow", u"RTSP", None))
         self.VersionLabel.setText(QCoreApplication.translate("MainWindow", u"Version: 2.0-Beta", None))

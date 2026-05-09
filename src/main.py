@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout
 current_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(current_dir, "ui"))
 
-from ui.home import Ui_MainWindow
+from ui.home_ui import Ui_MainWindow
 from utils.ui_functions import UIFunctions
 
 

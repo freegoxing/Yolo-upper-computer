@@ -234,7 +234,7 @@ background-color: rgba(114, 129, 214, 59);
           <property name="frameShadow">
            <enum>QFrame::Shadow::Raised</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,0,0,0">
+          <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,0">
            <property name="spacing">
             <number>15</number>
            </property>
@@ -253,40 +253,6 @@ background-color: rgba(114, 129, 214, 59);
            <property name="bottomMargin">
             <number>0</number>
            </property>
-           <item>
-            <widget class="QPushButton" name="src_file_button">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>45</height>
-              </size>
-             </property>
-             <property name="cursor">
-              <cursorShape>PointingHandCursor</cursorShape>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton{
-background-image: url(:/all/img/file.png);
-background-repeat: no-repeat;
-background-position: left center;
-border: none;
-border-left: 23px solid transparent;
-
-text-align: center;
-padding-left: 0px;
-color: rgba(255, 255, 255, 199);
-font: 700 12pt &quot;Nirmala UI&quot;;
-}
-
-QPushButton:hover{
-background-color: rgba(114, 129, 214, 59);
-}</string>
-             </property>
-             <property name="text">
-              <string>加载文件</string>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QPushButton" name="src_cam_button">
              <property name="minimumSize">

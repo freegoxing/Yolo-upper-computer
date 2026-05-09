@@ -17,8 +17,8 @@ line-length = 88
 target-version = "py313"
 
 extend-exclude = [
-    "src/ui/home.py",
-    "src/ui/resources.py",
+    "src/ui/*_ui.py",
+    "src/ui/*_rc.py",
 ]
 [tool.ruff.lint]
 select = [
