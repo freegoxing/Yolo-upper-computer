@@ -5531,7 +5531,11 @@ padding-left: 10px;
             <widget class="QLabel" name="status_bar">
              <property name="styleSheet">
               <string notr="true">font: 700 11pt &quot;Segoe UI&quot;;
-color: rgba(0, 0, 0, 140);</string>
+
+color: rgb(245, 248, 252);
+
+padding-left: 10px;
+</string>
              </property>
              <property name="text">
               <string>Welcome!</string>

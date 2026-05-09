@@ -2719,7 +2719,11 @@ class Ui_MainWindow(object):
         self.status_bar = QLabel(self.below)
         self.status_bar.setObjectName(u"status_bar")
         self.status_bar.setStyleSheet(u"font: 700 11pt \"Segoe UI\";\n"
-"color: rgba(0, 0, 0, 140);")
+"\n"
+"color: rgb(245, 248, 252);\n"
+"\n"
+"padding-left: 10px;\n"
+"")
 
         self.horizontalLayout_13.addWidget(self.status_bar)
 
