@@ -17,11 +17,6 @@
         <file>img/file.png</file>
         <file>img/cam.png</file>
         <file>img/RTSP.png</file>
-        <file>img/classify.png</file>
-        <file>img/detect.png</file>
-        <file>img/pose.png</file>
-        <file>img/segment.png</file>
-        <file>img/track.png</file>
     </qresource>
 </RCC>
 

@@ -23,7 +23,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.central_layout.setContentsMargins(0, 0, 0, 0)
         self.central_layout.addWidget(self.Main_QF)
         self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
         UIFunctions.uiDefinitions(self)
 
         # 2. 初始化 YOLO 线程
@@ -63,9 +62,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def display_image(self, q_image, label):
         # 将 QImage 缩放到 label 的大小并显示
         pixmap = QPixmap.fromImage(q_image)
-        scaled_pixmap = pixmap.scaled(
-            label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
-        )
+        scaled_pixmap = pixmap.scaled(label.size())
         label.setPixmap(scaled_pixmap)
 
     def update_stats(self, classes, targets, fps):
@@ -73,7 +70,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Class_num_cam.setText(str(classes))
         self.Target_num_cam.setText(str(targets))
         self.fps_label_cam.setText(f"{fps:.1f}")
-        self.Model_name.setText("YOLOv8n")
 
     def mousePressEvent(self, event):
         self.dragPos = event.globalPosition().toPoint()
