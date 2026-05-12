@@ -43,7 +43,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 设置默认模型路径
         self.model_path = DEFAULT_MODEL_PATH
         # 默认测试图片源 (你可以改成 0 测试摄像头)
-        self.test_source = "../test/test.mp4"
+        self.test_source = "../test/steel.mp4"
 
     def init_thresholds(self):
         # 初始化置信度

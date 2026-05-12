@@ -7,8 +7,6 @@ DEFAULT_MODEL_PATH = os.path.join(
     os.path.dirname(__file__), "..", "..","models", "best.pt"
 )
 
-# 如果你有训练好的 NEU-DET 模型，可以修改这里
-
 # 类别名称（针对 NEU-DET 6类数据）
 CLASS_NAMES = {
     0: "crazing",  # 龟裂
