@@ -1600,7 +1600,7 @@ padding-left: 14px;
 font-weight: 600;</string>
                          </property>
                          <property name="text">
-                          <string>目标数量</string>
+                          <string>缺陷类型</string>
                          </property>
                          <property name="alignment">
                           <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1656,7 +1656,7 @@ font-weight: 600;</string>
                        <property name="bottomMargin">
                         <number>6</number>
                        </property>
-                       <item alignment="Qt::AlignmentFlag::AlignTop">
+                       <item>
                         <widget class="QLabel" name="Target_num_cam">
                          <property name="minimumSize">
                           <size>
