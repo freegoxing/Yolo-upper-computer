@@ -5,6 +5,6 @@
 *.pyo
 *.pyc
 
-*.pt
+models
 
 test

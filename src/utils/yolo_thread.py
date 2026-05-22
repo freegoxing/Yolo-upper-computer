@@ -26,6 +26,7 @@ class YoloThread(QThread):
         self.is_running = True
         self.conf_threshold = CONF_THRESHOLD
         self.iou_threshold = IOU_THRESHOLD
+        self.device = 'cpu'  # 默认设备
 
     def load_model(self, model_path):
         try:
@@ -45,6 +46,7 @@ class YoloThread(QThread):
             conf=self.conf_threshold,
             iou=self.iou_threshold,
             stream=True,  # 迭代器模式，节省内存
+            device=self.device,  # 增加设备参数
         )
 
         for result in results:
