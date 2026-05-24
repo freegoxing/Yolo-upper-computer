@@ -52,54 +52,73 @@ class YoloThread(QThread):
         for result in results:
             if not self.is_running:
                 break
+            self.emit_result_signals(result)
 
-            # 1. 获取原始图片和绘制了检测框的图片 (numpy array)
-            orig_frame = result.orig_img
-            annotated_frame = result.plot()
+    def process_single_frame(self, frame_bgr):
+        """用于处理从 UDP 线程推送过来的单帧数据"""
+        if self.model is None or not self.is_running:
+            return
+        
+        # 单帧预测
+        results = self.model.predict(
+            source=frame_bgr,
+            conf=self.conf_threshold,
+            iou=self.iou_threshold,
+            device=self.device,
+            verbose=False
+        )
+        
+        if results:
+            self.emit_result_signals(results[0])
 
-            # 2. 转换颜色空间 (BGR -> RGB) 并转换为 QImage
-            def to_qimage(cv_img):
-                rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
-                h, w, ch = rgb_image.shape
-                bytes_per_line = ch * w
-                return QImage(
-                    rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888
-                ).copy()
+    def emit_result_signals(self, result):
+        # 1. 获取原始图片和绘制了检测框的图片 (numpy array)
+        orig_frame = result.orig_img
+        annotated_frame = result.plot()
 
-            raw_q_image = to_qimage(orig_frame)
-            res_q_image = to_qimage(annotated_frame)
+        # 2. 转换颜色空间 (BGR -> RGB) 并转换为 QImage
+        def to_qimage(cv_img):
+            rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
+            h, w, ch = rgb_image.shape
+            bytes_per_line = ch * w
+            return QImage(
+                rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888
+            ).copy()
 
-            # 3. 提取详细检测信息 (逻辑整合自 detect_for_ui.py)
-            defects = []
-            for box in result.boxes:
-                x1, y1, x2, y2 = map(int, box.xyxy[0])
-                cls_id = int(box.cls[0])
-                conf_score = float(box.conf[0])
-                cls_name = CLASS_NAMES.get(cls_id, f"class_{cls_id}")
+        raw_q_image = to_qimage(orig_frame)
+        res_q_image = to_qimage(annotated_frame)
 
-                defects.append(
-                    {
-                        "class": cls_name,
-                        "class_id": cls_id,
-                        "confidence": round(conf_score, 4),
-                        "bbox": [x1, y1, x2, y2],
-                        "bbox_center": [round((x1 + x2) / 2), round((y1 + y2) / 2)],
-                        "bbox_size": [x2 - x1, y2 - y1],
-                    }
-                )
+        # 3. 提取详细检测信息
+        defects = []
+        for box in result.boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            cls_id = int(box.cls[0])
+            conf_score = float(box.conf[0])
+            cls_name = CLASS_NAMES.get(cls_id, f"class_{cls_id}")
 
-            # 4. 发送信号给主界面
-            self.raw_frame_signal.emit(raw_q_image)
-            self.frame_signal.emit(res_q_image)
-            self.results_signal.emit(defects)
+            defects.append(
+                {
+                    "class": cls_name,
+                    "class_id": cls_id,
+                    "confidence": round(conf_score, 4),
+                    "bbox": [x1, y1, x2, y2],
+                    "bbox_center": [round((x1 + x2) / 2), round((y1 + y2) / 2)],
+                    "bbox_size": [x2 - x1, y2 - y1],
+                }
+            )
 
-            # 5. 计算并发送统计信息
-            num_classes = len(result.boxes.cls.unique())
-            num_targets = len(result.boxes)
-            # 获取推理速度 (ms) 并转换为 FPS
-            speed = result.speed["inference"]
-            fps = 1000 / speed if speed > 0 else 0
-            self.stats_signal.emit(num_classes, num_targets, fps)
+        # 4. 发送信号给主界面
+        self.raw_frame_signal.emit(raw_q_image)
+        self.frame_signal.emit(res_q_image)
+        self.results_signal.emit(defects)
+
+        # 5. 计算并发送统计信息
+        num_classes = len(result.boxes.cls.unique())
+        num_targets = len(result.boxes)
+        # 获取推理速度 (ms) 并转换为 FPS
+        speed = result.speed["inference"]
+        fps = 1000 / speed if speed > 0 else 0
+        self.stats_signal.emit(num_classes, num_targets, fps)
 
     def stop(self):
         self.is_running = False

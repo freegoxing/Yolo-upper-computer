@@ -54,8 +54,6 @@ class Ui_MainWindow(object):
 "    );\n"
 "\n"
 "    border: 1px solid rgba(100, 140, 180, 90);\n"
-"\n"
-"    border-radius: 14px;\n"
 "}")
         self.LeftMenuBg.setFrameShape(QFrame.Shape.NoFrame)
         self.LeftMenuBg.setFrameShadow(QFrame.Shadow.Raised)
@@ -137,6 +135,30 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.verticalLayout_5.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.src_file_button = QPushButton(self.MenuBox)
+        self.src_file_button.setObjectName(u"src_file_button")
+        self.src_file_button.setMinimumSize(QSize(0, 45))
+        self.src_file_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.src_file_button.setStyleSheet(u"QPushButton{\n"
+"background-image: url(:/all/img/file.png);\n"
+"background-repeat: no-repeat;\n"
+"background-position: left center;\n"
+"border: none;\n"
+"border-left: 23px solid transparent;\n"
+"\n"
+"text-align: center;\n"
+"padding-left: 0px;\n"
+"color: rgba(255, 255, 255, 199);\n"
+"font: 700 12pt \"Nirmala UI\";\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"background-color: rgba(114, 129, 214, 59);\n"
+"}")
+        self.src_file_button.setCheckable(False)
+
+        self.verticalLayout_5.addWidget(self.src_file_button)
+
         self.src_cam_button = QPushButton(self.MenuBox)
         self.src_cam_button.setObjectName(u"src_cam_button")
         self.src_cam_button.setMinimumSize(QSize(0, 45))
@@ -185,6 +207,30 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addWidget(self.src_rtsp_button)
 
+        self.src_udp_button = QPushButton(self.MenuBox)
+        self.src_udp_button.setObjectName(u"src_udp_button")
+        self.src_udp_button.setMinimumSize(QSize(0, 45))
+        self.src_udp_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.src_udp_button.setAutoFillBackground(False)
+        self.src_udp_button.setStyleSheet(u"QPushButton{\n"
+"background-image: url(:/all/img/RTSP.png);\n"
+"background-repeat: no-repeat;\n"
+"background-position: left center;\n"
+"border: none;\n"
+"border-left: 23px solid transparent;\n"
+"\n"
+"text-align: center;\n"
+"padding-left: 0px;\n"
+"color: rgba(255, 255, 255, 199);\n"
+"font: 700 12pt \"Nirmala UI\";\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"background-color: rgba(114, 129, 214, 59);\n"
+"}")
+
+        self.verticalLayout_5.addWidget(self.src_udp_button)
+
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_5.addItem(self.verticalSpacer)
@@ -223,7 +269,6 @@ class Ui_MainWindow(object):
 "\n"
 "    border: 1px solid rgba(120, 160, 200, 40);\n"
 "\n"
-"    border-radius: 12px;\n"
 "}")
         self.ContentBox.setFrameShape(QFrame.Shape.StyledPanel)
         self.ContentBox.setFrameShadow(QFrame.Shadow.Raised)
@@ -759,7 +804,7 @@ class Ui_MainWindow(object):
 "")
         self.Target_num_cam.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout_25.addWidget(self.Target_num_cam, 0, Qt.AlignmentFlag.AlignTop)
+        self.verticalLayout_25.addWidget(self.Target_num_cam)
 
 
         self.verticalLayout_24.addWidget(self.Target_bottom_cam)
@@ -1581,8 +1626,10 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.ToggleBotton.setText(QCoreApplication.translate("MainWindow", u"\u9690\u85cf\u8fb9\u680f", None))
+        self.src_file_button.setText(QCoreApplication.translate("MainWindow", u"\u6444\u50cf\u5934", None))
         self.src_cam_button.setText(QCoreApplication.translate("MainWindow", u"\u6444\u50cf\u5934", None))
         self.src_rtsp_button.setText(QCoreApplication.translate("MainWindow", u"RTSP", None))
+        self.src_udp_button.setText(QCoreApplication.translate("MainWindow", u"UDP", None))
         self.VersionLabel.setText(QCoreApplication.translate("MainWindow", u"Version: 2.0-Beta", None))
         self.explain_title.setText(QCoreApplication.translate("MainWindow", u"\u667a\u68c0\u5fae\u94a2\u961f", None))
         self.settings_button.setText("")
@@ -1593,7 +1640,7 @@ class Ui_MainWindow(object):
         self.Class_num_cam.setText("")
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"\u6bcf\u79d2\u5e27\u6570", None))
         self.fps_label_cam.setText("")
-        self.label_10.setText(QCoreApplication.translate("MainWindow", u"\u76ee\u6807\u6570\u91cf", None))
+        self.label_10.setText(QCoreApplication.translate("MainWindow", u"\u7f3a\u9677\u7c7b\u578b", None))
         self.Target_num_cam.setText("")
         self.pre_cam.setText("")
         self.res_cam.setText("")

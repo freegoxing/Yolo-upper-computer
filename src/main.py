@@ -12,6 +12,7 @@ from config.yolo_config import CONF_THRESHOLD, DEFAULT_MODEL_PATH, IOU_THRESHOLD
 from ui.home_ui import Ui_MainWindow
 from utils.ui_functions import UIFunctions
 from utils.yolo_thread import YoloThread
+from utils.udp_thread import UdpReceiverThread
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -26,24 +27,48 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowFlag(Qt.FramelessWindowHint)
         UIFunctions.uiDefinitions(self)
 
-        # 2. 初始化 YOLO 线程
+        # 2. 初始化线程
         self.yolo_thread = YoloThread()
-        # 连接信号
+        self.udp_thread = UdpReceiverThread()
+
+        # 连接 YOLO 信号
         self.yolo_thread.raw_frame_signal.connect(self.update_raw_video_label)
         self.yolo_thread.frame_signal.connect(self.update_res_video_label)
         self.yolo_thread.stats_signal.connect(self.update_stats)
         self.yolo_thread.results_signal.connect(self.process_detection_results)
 
-        # 3. 界面交互：阈值联动
-        self.init_thresholds()
+        # 连接 UDP 信号到 YOLO
+        self.udp_thread.frame_ready.connect(self.yolo_thread.process_single_frame)
 
-        # 4. 绑定按钮：点击运行按钮开始测试
+        # 3. 界面交互
+        self.init_thresholds()
+        
+        # 绑定源切换按钮
+        self.src_file_button.clicked.connect(lambda: self.select_source("file"))
+        self.src_cam_button.clicked.connect(lambda: self.select_source("camera"))
+        self.src_rtsp_button.clicked.connect(lambda: self.select_source("rtsp"))
+        self.src_udp_button.clicked.connect(lambda: self.select_source("udp"))
+
+        # 4. 绑定运行按钮
         self.run_button_cam.clicked.connect(self.toggle_inference)
 
-        # 设置默认模型路径
+        # 设置默认值
         self.model_path = DEFAULT_MODEL_PATH
-        # 默认测试图片源 (你可以改成 0 测试摄像头)
+        self.current_source_type = "file" # 默认模式
         self.test_source = "../test/steel.mp4"
+
+    def select_source(self, src_type):
+        self.current_source_type = src_type
+        if src_type == "file":
+            self.status_bar.setText("Source switched to: File")
+        elif src_type == "camera":
+            self.test_source = 0
+            self.status_bar.setText("Source switched to: Camera")
+        elif src_type == "rtsp":
+            self.test_source = "rtsp://admin:123456@192.168.1.100"
+            self.status_bar.setText("Source switched to: RTSP")
+        elif src_type == "udp":
+            self.status_bar.setText("Source switched to: FPGA UDP (0.0.0.0:6001)")
 
     def init_thresholds(self):
         # 初始化置信度
@@ -92,14 +117,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.run_button_cam.isChecked():
             # 开始推理
             if self.yolo_thread.load_model(self.model_path):
-                self.yolo_thread.source = self.test_source
                 self.yolo_thread.is_running = True
-                self.yolo_thread.start()
+                
+                if self.current_source_type == "udp":
+                    # UDP 模式：启动 UDP 接收，YOLO 线程只负责处理信号（不进入 run 循环）
+                    self.udp_thread.start()
+                    self.status_bar.setText("UDP Inference Started...")
+                else:
+                    # 标准模式：YOLO 线程自带 run 循环
+                    self.yolo_thread.source = self.test_source
+                    self.yolo_thread.start()
+                    self.status_bar.setText(f"Inference Started: {self.test_source}")
+                
                 self.run_button_cam.setToolTip("Stop")
         else:
             # 停止推理
             self.yolo_thread.stop()
+            if self.udp_thread.isRunning():
+                self.udp_thread.stop()
             self.run_button_cam.setToolTip("Start")
+            self.status_bar.setText("Inference Stopped.")
 
     def update_raw_video_label(self, q_image):
         self.display_image(q_image, self.pre_cam)
@@ -125,6 +162,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def closeEvent(self, event):
         # 确保窗口关闭时线程也停止
         self.yolo_thread.stop()
+        self.udp_thread.stop()
         event.accept()
 
 
