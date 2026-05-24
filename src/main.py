@@ -28,6 +28,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 2. 初始化 YOLO 线程
         self.yolo_thread = YoloThread()
+        self.yolo_thread.device = "intel:gpu"
         # 连接信号
         self.yolo_thread.raw_frame_signal.connect(self.update_raw_video_label)
         self.yolo_thread.frame_signal.connect(self.update_res_video_label)
