@@ -2,7 +2,6 @@ import cv2
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QImage
 from ultralytics import YOLO
-from ultralytics.models.yolo import detect
 
 try:
     from config.yolo_config import CLASS_NAMES, CONF_THRESHOLD, IOU_THRESHOLD
@@ -31,7 +30,7 @@ class YoloThread(QThread):
 
     def load_model(self, model_path):
         try:
-            self.model = YOLO(model_path, task="detect")
+            self.model = YOLO(model_path, task='detect')
             return True
         except Exception as e:
             print(f"Error loading model: {e}")
@@ -46,8 +45,9 @@ class YoloThread(QThread):
             source=self.source,
             conf=self.conf_threshold,
             iou=self.iou_threshold,
-            stream=True,  # 迭代器模式，节省内存
-            device=self.device,  # 增加设备参数
+            stream=True,
+            device=self.device,
+            half=True,  # 开启半精度 (FP16)，Intel GPU 提速明显
         )
 
         for result in results:
@@ -56,21 +56,31 @@ class YoloThread(QThread):
 
             # 1. 获取原始图片和绘制了检测框的图片 (numpy array)
             orig_frame = result.orig_img
-            annotated_frame = result.plot()
+            
+            # 如果没有检测到目标，直接使用原图，避免 result.plot() 的额外耗时
+            if len(result.boxes) > 0:
+                annotated_frame = result.plot()
+            else:
+                annotated_frame = orig_frame
 
-            # 2. 转换颜色空间 (BGR -> RGB) 并转换为 QImage
+            # 2. 直接使用 QImage.Format_BGR888 避免 cv2.cvtColor 的 CPU 消耗
             def to_qimage(cv_img):
-                rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
-                h, w, ch = rgb_image.shape
+                h, w, ch = cv_img.shape
                 bytes_per_line = ch * w
+                # 使用 Format_BGR888 直接读取 BGR 数据，减少转换开销
                 return QImage(
-                    rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888
+                    cv_img.data, w, h, bytes_per_line, QImage.Format_BGR888
                 ).copy()
 
             raw_q_image = to_qimage(orig_frame)
-            res_q_image = to_qimage(annotated_frame)
+            
+            # 如果没有检测到目标，结果图直接复用原始图的 QImage 引用
+            if len(result.boxes) > 0:
+                res_q_image = to_qimage(annotated_frame)
+            else:
+                res_q_image = raw_q_image
 
-            # 3. 提取详细检测信息 (逻辑整合自 detect_for_ui.py)
+            # 3. 提取详细检测信息
             defects = []
             for box in result.boxes:
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
