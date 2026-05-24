@@ -2,6 +2,7 @@ import cv2
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QImage
 from ultralytics import YOLO
+from ultralytics.models.yolo import detect
 
 try:
     from config.yolo_config import CLASS_NAMES, CONF_THRESHOLD, IOU_THRESHOLD
@@ -26,11 +27,11 @@ class YoloThread(QThread):
         self.is_running = True
         self.conf_threshold = CONF_THRESHOLD
         self.iou_threshold = IOU_THRESHOLD
-        self.device = 'cpu'  # 默认设备
+        self.device = 'intel:gpu'  # 默认设备
 
     def load_model(self, model_path):
         try:
-            self.model = YOLO(model_path)
+            self.model = YOLO(model_path, task="detect")
             return True
         except Exception as e:
             print(f"Error loading model: {e}")
