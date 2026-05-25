@@ -111,15 +111,34 @@ python src/main.py
 
 ---
 
-## 6. 开发者指南
+## 6. 模型转换 (OpenVINO)
 
-*   **UI 修改**：编辑 `src/ui/home.ui` (使用 Qt Designer)，运行相关转换脚本更新 `home_ui.py`。
-*   **参数配置**：在 `src/config/yolo_config.py` 中修改默认阈值与路径。
-*   **工具箱**：`tools/` 目录下提供了 UDP 连通性探测工具 `udp_linux_probe.py`。
+为了在 Intel iGPU/NPU 上获得最佳推理性能，建议将 PyTorch 的 `.pt` 权重文件转换为 OpenVINO 格式（FP16）。
+
+### 6.1 转换操作
+在项目虚拟环境下运行：
+```bash
+python tools/model_export/export_openvino.py <你的模型路径>.pt
+```
+
+### 6.2 说明
+*   **输出**：脚本将自动在原模型目录下生成一个 OpenVINO 格式文件夹（包含 `.xml` 和 `.bin`）。
+*   **优化**：默认开启 `half=True` (FP16)，适配 Intel 异构加速。
+*   **加载**：在上位机界面选择模型时，直接指向转换生成的文件夹或其内部的 `.xml` 文件即可。
 
 ---
 
-## 7. 许可证
+## 7. 开发者指南
+
+*   **UI 修改**：编辑 `src/ui/home.ui` (使用 Qt Designer)，运行相关转换脚本更新 `home_ui.py`。
+*   **参数配置**：在 `src/config/yolo_config.py` 中修改默认阈值与路径。
+*   **工具箱**：
+    *   `tools/model_export/`：模型导出与优化工具。
+    *   `tools/fpga/`：FPGA 通信调试与环境检测工具。
+
+---
+
+## 8. 许可证
 
 本项目遵循 [MIT License](LICENSE)。
 
