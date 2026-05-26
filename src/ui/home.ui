@@ -415,53 +415,6 @@ background-color: rgba(114, 129, 214, 59);
           </layout>
          </widget>
         </item>
-        <item>
-         <widget class="QFrame" name="VersionInfo">
-          <property name="minimumSize">
-           <size>
-            <width>235</width>
-            <height>10</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>250</width>
-            <height>15</height>
-           </size>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::Shape::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Shadow::Raised</enum>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <property name="leftMargin">
-            <number>18</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="VersionLabel">
-             <property name="styleSheet">
-              <string notr="true">font: 900 italic 10pt &quot;Segoe UI&quot;;
-color: rgba(255, 255, 255, 199);</string>
-             </property>
-             <property name="text">
-              <string>Version: 2.0-Beta</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
        </layout>
       </widget>
      </item>
@@ -582,7 +535,7 @@ font-weight: 700;</string>
               </size>
              </property>
              <property name="frameShape">
-              <enum>QFrame::Shape::StyledPanel</enum>
+              <enum>QFrame::Shape::NoFrame</enum>
              </property>
              <property name="frameShadow">
               <enum>QFrame::Shadow::Raised</enum>
@@ -594,39 +547,6 @@ font-weight: 700;</string>
               <property name="bottomMargin">
                <number>0</number>
               </property>
-              <item>
-               <widget class="QPushButton" name="settings_button">
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="cursor">
-                 <cursorShape>PointingHandCursor</cursorShape>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    background-color: transparent;
-    background-image: url(:/all/img/set.png);
-    background-repeat: no-repeat;
-    background-position: center;
-
-    border: 1px solid rgba(120, 160, 200, 40);
-    border-radius: 8px;
-}</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
               <item>
                <widget class="QPushButton" name="min_sf">
                 <property name="minimumSize">
@@ -643,14 +563,14 @@ font-weight: 700;</string>
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton{
-	
+
 	background-color: rgb(4, 180, 0);
 border:1px solid rgba(113, 17, 15,50);
 border-radius:6px;
 }
 QPushButton:hover {
 background-color:rgb(139, 29, 31)
-	
+
 }
 QPushButton:pressed {
 	background-color: rgb(232, 59, 35);
@@ -678,14 +598,14 @@ QPushButton:pressed {
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton{
-	
+
 	background-color: rgb(227, 199, 0);
 border:1px solid rgba(113, 17, 15,50);
 border-radius:6px;
 }
 QPushButton:hover {
 background-color:rgb(139, 29, 31)
-	
+
 }
 QPushButton:pressed {
 	background-color: rgb(232, 59, 35);
@@ -713,14 +633,14 @@ QPushButton:pressed {
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton{
-	
+
 	background-color: rgb(240, 108, 96);
 border:1px solid rgba(113, 17, 15,50);
 border-radius:6px;
 }
 QPushButton:hover {
 background-color:rgb(139, 29, 31)
-	
+
 }
 QPushButton:pressed {
 	background-color: rgb(232, 59, 35);
@@ -744,7 +664,7 @@ QPushButton:pressed {
            <string notr="true"/>
           </property>
           <property name="frameShape">
-           <enum>QFrame::Shape::StyledPanel</enum>
+           <enum>QFrame::Shape::NoFrame</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Shadow::Raised</enum>
@@ -1983,17 +1903,17 @@ QPushButton:hover{
                     </size>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">QProgressBar{ 
+                    <string notr="true">QProgressBar{
 font: 700 10pt &quot;Microsoft YaHei UI&quot;;
-color: rgb(253, 143, 134); 
-text-align:center; 
+color: rgb(253, 143, 134);
+text-align:center;
 border:3px solid rgb(255, 255, 255);
-border-radius: 10px; 
+border-radius: 10px;
 background-color: rgba(215, 215, 215,100);
-} 
+}
 
-QProgressBar:chunk{ 
-border-radius:0px; 
+QProgressBar:chunk{
+border-radius:0px;
 background: rgba(119, 111, 252, 200);
 border-radius: 7px;
 }</string>
@@ -2236,7 +2156,7 @@ QComboBox {
             border-radius: 10px;
             padding-left: 15px;
         }
-        
+
         QComboBox:on {
             border: 1px solid #63acfb;
         }
@@ -2247,7 +2167,7 @@ QComboBox {
             border-top-right-radius: 15px;
             border-bottom-right-radius: 15px;
         }
-        
+
         QComboBox::drop-down:on {
             border-left: 1px solid #63acfb;
         }
@@ -2441,7 +2361,7 @@ border-radius: 2px;
 background-color: rgba(255,255,255,90);
 font: 600 9pt &quot;Segoe UI&quot;;
 }
-        
+
 QDoubleSpinBox::up-button {
 width: 10px;
 height: 9px;
@@ -2451,7 +2371,7 @@ border-image: url(:/all/img/box_up.png);
 QDoubleSpinBox::up-button:pressed {
 margin-top: 1px;
 }
-            
+
 QDoubleSpinBox::down-button {
 width: 10px;
 height: 9px;
@@ -2669,7 +2589,7 @@ border-radius: 2px;
 background-color: rgba(255,255,255,90);
 font: 600 9pt &quot;Segoe UI&quot;;
 }
-        
+
 QDoubleSpinBox::up-button {
 width: 10px;
 height: 9px;
@@ -2679,7 +2599,7 @@ border-image: url(:/all/img/box_up.png);
 QDoubleSpinBox::up-button:pressed {
 margin-top: 1px;
 }
-            
+
 QDoubleSpinBox::down-button {
 width: 10px;
 height: 9px;
@@ -2894,7 +2814,7 @@ border-radius: 2px;
 background-color: rgba(255,255,255,90);
 font: 600 9pt &quot;Segoe UI&quot;;
 }
-        
+
 QSpinBox::up-button {
 width: 10px;
 height: 9px;
@@ -2904,7 +2824,7 @@ border-image: url(:/all/img/box_up.png);
 QSpinBox::up-button:pressed {
 margin-top: 1px;
 }
-            
+
 QSpinBox::down-button {
 width: 10px;
 height: 9px;
@@ -3179,7 +3099,7 @@ padding-left: 10px;
            </size>
           </property>
           <property name="frameShape">
-           <enum>QFrame::Shape::StyledPanel</enum>
+           <enum>QFrame::Shape::NoFrame</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Shadow::Raised</enum>
@@ -3209,25 +3129,6 @@ padding-left: 10px;
              </property>
              <property name="text">
               <string>Welcome!</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QFrame" name="frame_size_grip">
-             <property name="maximumSize">
-              <size>
-               <width>20</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::Shape::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Shadow::Raised</enum>
              </property>
             </widget>
            </item>

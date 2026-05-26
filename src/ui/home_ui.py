@@ -238,26 +238,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.MenuBox)
 
-        self.VersionInfo = QFrame(self.LeftMenuBg)
-        self.VersionInfo.setObjectName(u"VersionInfo")
-        self.VersionInfo.setMinimumSize(QSize(235, 10))
-        self.VersionInfo.setMaximumSize(QSize(250, 15))
-        self.VersionInfo.setFrameShape(QFrame.Shape.StyledPanel)
-        self.VersionInfo.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_3 = QVBoxLayout(self.VersionInfo)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(18, 0, -1, 0)
-        self.VersionLabel = QLabel(self.VersionInfo)
-        self.VersionLabel.setObjectName(u"VersionLabel")
-        self.VersionLabel.setStyleSheet(u"font: 900 italic 10pt \"Segoe UI\";\n"
-"color: rgba(255, 255, 255, 199);")
-        self.VersionLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.verticalLayout_3.addWidget(self.VersionLabel)
-
-
-        self.verticalLayout_2.addWidget(self.VersionInfo)
-
 
         self.main_qframe.addWidget(self.LeftMenuBg)
 
@@ -308,41 +288,24 @@ class Ui_MainWindow(object):
         self.buttons_sf.setObjectName(u"buttons_sf")
         self.buttons_sf.setMinimumSize(QSize(120, 30))
         self.buttons_sf.setMaximumSize(QSize(120, 30))
-        self.buttons_sf.setFrameShape(QFrame.Shape.StyledPanel)
+        self.buttons_sf.setFrameShape(QFrame.Shape.NoFrame)
         self.buttons_sf.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_2 = QHBoxLayout(self.buttons_sf)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(-1, 0, -1, 0)
-        self.settings_button = QPushButton(self.buttons_sf)
-        self.settings_button.setObjectName(u"settings_button")
-        self.settings_button.setMinimumSize(QSize(0, 20))
-        self.settings_button.setMaximumSize(QSize(16777215, 20))
-        self.settings_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.settings_button.setStyleSheet(u"QPushButton {\n"
-"    background-color: transparent;\n"
-"    background-image: url(:/all/img/set.png);\n"
-"    background-repeat: no-repeat;\n"
-"    background-position: center;\n"
-"\n"
-"    border: 1px solid rgba(120, 160, 200, 40);\n"
-"    border-radius: 8px;\n"
-"}")
-
-        self.horizontalLayout_2.addWidget(self.settings_button)
-
         self.min_sf = QPushButton(self.buttons_sf)
         self.min_sf.setObjectName(u"min_sf")
         self.min_sf.setMinimumSize(QSize(14, 14))
         self.min_sf.setMaximumSize(QSize(14, 14))
         self.min_sf.setStyleSheet(u"QPushButton{\n"
-"	\n"
+"\n"
 "	background-color: rgb(4, 180, 0);\n"
 "border:1px solid rgba(113, 17, 15,50);\n"
 "border-radius:6px;\n"
 "}\n"
 "QPushButton:hover {\n"
 "background-color:rgb(139, 29, 31)\n"
-"	\n"
+"\n"
 "}\n"
 "QPushButton:pressed {\n"
 "	background-color: rgb(232, 59, 35);\n"
@@ -356,14 +319,14 @@ class Ui_MainWindow(object):
         self.max_sf.setMinimumSize(QSize(14, 14))
         self.max_sf.setMaximumSize(QSize(14, 14))
         self.max_sf.setStyleSheet(u"QPushButton{\n"
-"	\n"
+"\n"
 "	background-color: rgb(227, 199, 0);\n"
 "border:1px solid rgba(113, 17, 15,50);\n"
 "border-radius:6px;\n"
 "}\n"
 "QPushButton:hover {\n"
 "background-color:rgb(139, 29, 31)\n"
-"	\n"
+"\n"
 "}\n"
 "QPushButton:pressed {\n"
 "	background-color: rgb(232, 59, 35);\n"
@@ -377,14 +340,14 @@ class Ui_MainWindow(object):
         self.close_button.setMinimumSize(QSize(14, 14))
         self.close_button.setMaximumSize(QSize(14, 14))
         self.close_button.setStyleSheet(u"QPushButton{\n"
-"	\n"
+"\n"
 "	background-color: rgb(240, 108, 96);\n"
 "border:1px solid rgba(113, 17, 15,50);\n"
 "border-radius:6px;\n"
 "}\n"
 "QPushButton:hover {\n"
 "background-color:rgb(139, 29, 31)\n"
-"	\n"
+"\n"
 "}\n"
 "QPushButton:pressed {\n"
 "	background-color: rgb(232, 59, 35);\n"
@@ -402,7 +365,7 @@ class Ui_MainWindow(object):
         self.content = QStackedWidget(self.ContentBox)
         self.content.setObjectName(u"content")
         self.content.setStyleSheet(u"")
-        self.content.setFrameShape(QFrame.Shape.StyledPanel)
+        self.content.setFrameShape(QFrame.Shape.NoFrame)
         self.content.setFrameShadow(QFrame.Shadow.Raised)
         self.widget_2 = QWidget()
         self.widget_2.setObjectName(u"widget_2")
@@ -916,17 +879,17 @@ class Ui_MainWindow(object):
         self.progress_bar_cam.setObjectName(u"progress_bar_cam")
         self.progress_bar_cam.setMinimumSize(QSize(0, 20))
         self.progress_bar_cam.setMaximumSize(QSize(16777215, 20))
-        self.progress_bar_cam.setStyleSheet(u"QProgressBar{ \n"
+        self.progress_bar_cam.setStyleSheet(u"QProgressBar{\n"
 "font: 700 10pt \"Microsoft YaHei UI\";\n"
-"color: rgb(253, 143, 134); \n"
-"text-align:center; \n"
+"color: rgb(253, 143, 134);\n"
+"text-align:center;\n"
 "border:3px solid rgb(255, 255, 255);\n"
-"border-radius: 10px; \n"
+"border-radius: 10px;\n"
 "background-color: rgba(215, 215, 215,100);\n"
-"} \n"
+"}\n"
 "\n"
-"QProgressBar:chunk{ \n"
-"border-radius:0px; \n"
+"QProgressBar:chunk{\n"
+"border-radius:0px;\n"
 "background: rgba(119, 111, 252, 200);\n"
 "border-radius: 7px;\n"
 "}")
@@ -1047,7 +1010,7 @@ class Ui_MainWindow(object):
 "            border-radius: 10px;\n"
 "            padding-left: 15px;\n"
 "        }\n"
-"        \n"
+"\n"
 "        QComboBox:on {\n"
 "            border: 1px solid #63acfb;\n"
 "        }\n"
@@ -1058,7 +1021,7 @@ class Ui_MainWindow(object):
 "            border-top-right-radius: 15px;\n"
 "            border-bottom-right-radius: 15px;\n"
 "        }\n"
-"        \n"
+"\n"
 "        QComboBox::drop-down:on {\n"
 "            border-left: 1px solid #63acfb;\n"
 "        }\n"
@@ -1073,9 +1036,9 @@ class Ui_MainWindow(object):
 "            image: url(:/all/img/box_up.png);\n"
 "        }\n"
 "\n"
-"        QComboBox QAbstractI"
-                        "temView {\n"
-"            border: none;\n"
+"        QComboBox QAbstractItemView {\n"
+"  "
+                        "          border: none;\n"
 "            outline: none;\n"
 "			padding: 10px;\n"
 "            background-color: rgb(223, 188, 220);\n"
@@ -1159,7 +1122,7 @@ class Ui_MainWindow(object):
 "background-color: rgba(255,255,255,90);\n"
 "font: 600 9pt \"Segoe UI\";\n"
 "}\n"
-"        \n"
+"\n"
 "QDoubleSpinBox::up-button {\n"
 "width: 10px;\n"
 "height: 9px;\n"
@@ -1169,7 +1132,7 @@ class Ui_MainWindow(object):
 "QDoubleSpinBox::up-button:pressed {\n"
 "margin-top: 1px;\n"
 "}\n"
-"            \n"
+"\n"
 "QDoubleSpinBox::down-button {\n"
 "width: 10px;\n"
 "height: 9px;\n"
@@ -1281,7 +1244,7 @@ class Ui_MainWindow(object):
 "background-color: rgba(255,255,255,90);\n"
 "font: 600 9pt \"Segoe UI\";\n"
 "}\n"
-"        \n"
+"\n"
 "QDoubleSpinBox::up-button {\n"
 "width: 10px;\n"
 "height: 9px;\n"
@@ -1291,7 +1254,7 @@ class Ui_MainWindow(object):
 "QDoubleSpinBox::up-button:pressed {\n"
 "margin-top: 1px;\n"
 "}\n"
-"            \n"
+"\n"
 "QDoubleSpinBox::down-button {\n"
 "width: 10px;\n"
 "height: 9px;\n"
@@ -1402,7 +1365,7 @@ class Ui_MainWindow(object):
 "background-color: rgba(255,255,255,90);\n"
 "font: 600 9pt \"Segoe UI\";\n"
 "}\n"
-"        \n"
+"\n"
 "QSpinBox::up-button {\n"
 "width: 10px;\n"
 "height: 9px;\n"
@@ -1412,7 +1375,7 @@ class Ui_MainWindow(object):
 "QSpinBox::up-button:pressed {\n"
 "margin-top: 1px;\n"
 "}\n"
-"            \n"
+"\n"
 "QSpinBox::down-button {\n"
 "width: 10px;\n"
 "height: 9px;\n"
@@ -1573,7 +1536,7 @@ class Ui_MainWindow(object):
         self.below.setObjectName(u"below")
         self.below.setMinimumSize(QSize(0, 30))
         self.below.setMaximumSize(QSize(16777215, 30))
-        self.below.setFrameShape(QFrame.Shape.StyledPanel)
+        self.below.setFrameShape(QFrame.Shape.NoFrame)
         self.below.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_13 = QHBoxLayout(self.below)
         self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
@@ -1588,15 +1551,6 @@ class Ui_MainWindow(object):
 "")
 
         self.horizontalLayout_13.addWidget(self.status_bar)
-
-        self.frame_size_grip = QFrame(self.below)
-        self.frame_size_grip.setObjectName(u"frame_size_grip")
-        self.frame_size_grip.setMaximumSize(QSize(20, 16777215))
-        self.frame_size_grip.setStyleSheet(u"")
-        self.frame_size_grip.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_size_grip.setFrameShadow(QFrame.Shadow.Raised)
-
-        self.horizontalLayout_13.addWidget(self.frame_size_grip)
 
 
         self.verticalLayout_6.addWidget(self.below)
@@ -1630,9 +1584,7 @@ class Ui_MainWindow(object):
         self.src_cam_button.setText(QCoreApplication.translate("MainWindow", u"\u6444\u50cf\u5934", None))
         self.src_rtsp_button.setText(QCoreApplication.translate("MainWindow", u"RTSP", None))
         self.src_udp_button.setText(QCoreApplication.translate("MainWindow", u"UDP", None))
-        self.VersionLabel.setText(QCoreApplication.translate("MainWindow", u"Version: 2.0-Beta", None))
         self.explain_title.setText(QCoreApplication.translate("MainWindow", u"\u667a\u68c0\u5fae\u94a2\u961f", None))
-        self.settings_button.setText("")
         self.min_sf.setText("")
         self.max_sf.setText("")
         self.close_button.setText("")
