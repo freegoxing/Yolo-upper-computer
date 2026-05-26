@@ -8,7 +8,11 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout
 current_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(current_dir, "ui"))
 
-from config.yolo_config import CONF_THRESHOLD, DEFAULT_MODEL_PATH, IOU_THRESHOLD
+from config.yolo_config import (
+    CONF_THRESHOLD,
+    DEFAULT_MODEL_PATH,
+    IOU_THRESHOLD,
+)
 from ui.home_ui import Ui_MainWindow
 from utils.udp_thread import UdpReceiverThread
 from utils.ui_functions import UIFunctions
@@ -27,7 +31,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowFlag(Qt.FramelessWindowHint)
         UIFunctions.uiDefinitions(self)
 
-        # 2. 初始化线程
+        # 2. 缺陷统计 UI 设置
+        self.setup_defect_stats()
+
+        # 3. 初始化线程
         self.yolo_thread = YoloThread()
         self.yolo_thread.device = "intel:gpu"
         self.udp_thread = UdpReceiverThread()
@@ -103,9 +110,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.yolo_thread.conf_threshold = self.conf_spinbox_cam.value()
         self.yolo_thread.iou_threshold = self.iou_spinbox_cam.value()
 
+    def setup_defect_stats(self):
+        # 映射 UI 文件中定义的 label 到统计字典
+        self.defect_widgets = {
+            "crazing": self.count_crazing,
+            "inclusion": self.count_inclusion,
+            "patches": self.count_patches,
+            "pitted_surface": self.count_pitted_surface,
+            "rolled-in_scale": self.count_rolled_in_scale,
+            "scratches": self.count_scratches,
+        }
+
     def process_detection_results(self, defects):
-        # 这里可以处理详细的缺陷列表
-        # 例如：在状态栏显示最近一个检测到的缺陷
+        # 1. 重置各类别计数
+        counts = {name: 0 for name in self.defect_widgets.keys()}
+
+        # 2. 累加当前帧检测结果
+        for d in defects:
+            cls_name = d["class"]
+            if cls_name in counts:
+                counts[cls_name] += 1
+
+        # 3. 更新 UI 上的数字
+        for cls_name, count in counts.items():
+            self.defect_widgets[cls_name].setText(str(count))
+
+        # 4. 状态栏处理
         if defects:
             latest = defects[0]
             self.status_bar.setText(

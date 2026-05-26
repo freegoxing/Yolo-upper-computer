@@ -1591,7 +1591,7 @@ padding-left: 14px;
 font-weight: 600;</string>
                          </property>
                          <property name="text">
-                          <string>缺陷类型</string>
+                          <string>缺陷总数</string>
                          </property>
                          <property name="alignment">
                           <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1785,6 +1785,256 @@ font: 17pt &quot;Noto Sans CJK SC&quot;;
                      <set>Qt::AlignmentFlag::AlignCenter</set>
                     </property>
                    </widget>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="Defect_QF_cam">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>70</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>70</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QFrame#Defect_QF_cam {
+    background-color: rgba(56, 66, 82, 100);
+    border: 1px solid rgba(160, 200, 255, 30);
+    border-radius: 10px;
+}</string>
+                </property>
+                <layout class="QHBoxLayout" name="defect_layout">
+                 <property name="spacing">
+                  <number>10</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>10</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>10</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>5</number>
+                 </property>
+                 <item>
+                  <widget class="QFrame" name="card_crazing">
+                   <property name="styleSheet">
+                    <string notr="true">QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="v_layout_crazing">
+                    <item>
+                     <widget class="QLabel" name="label_crazing">
+                      <property name="styleSheet">
+                       <string notr="true">color: #A0C8FF; font-size: 10pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>龟裂</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="count_crazing">
+                      <property name="styleSheet">
+                       <string notr="true">color: white; font-size: 13pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>0</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="card_inclusion">
+                   <property name="styleSheet">
+                    <string notr="true">QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="v_layout_inclusion">
+                    <item>
+                     <widget class="QLabel" name="label_inclusion">
+                      <property name="styleSheet">
+                       <string notr="true">color: #A0C8FF; font-size: 10pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>夹杂</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="count_inclusion">
+                      <property name="styleSheet">
+                       <string notr="true">color: white; font-size: 13pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>0</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="card_patches">
+                   <property name="styleSheet">
+                    <string notr="true">QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="v_layout_patches">
+                    <item>
+                     <widget class="QLabel" name="label_patches">
+                      <property name="styleSheet">
+                       <string notr="true">color: #A0C8FF; font-size: 10pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>斑块</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="count_patches">
+                      <property name="styleSheet">
+                       <string notr="true">color: white; font-size: 13pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>0</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="card_pitted">
+                   <property name="styleSheet">
+                    <string notr="true">QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="v_layout_pitted">
+                    <item>
+                     <widget class="QLabel" name="label_pitted">
+                      <property name="styleSheet">
+                       <string notr="true">color: #A0C8FF; font-size: 10pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>点蚀</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="count_pitted_surface">
+                      <property name="styleSheet">
+                       <string notr="true">color: white; font-size: 13pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>0</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="card_rolled">
+                   <property name="styleSheet">
+                    <string notr="true">QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="v_layout_rolled">
+                    <item>
+                     <widget class="QLabel" name="label_rolled">
+                      <property name="styleSheet">
+                       <string notr="true">color: #A0C8FF; font-size: 10pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>氧化皮</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="count_rolled_in_scale">
+                      <property name="styleSheet">
+                       <string notr="true">color: white; font-size: 13pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>0</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="card_scratches">
+                   <property name="styleSheet">
+                    <string notr="true">QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="v_layout_scratches">
+                    <item>
+                     <widget class="QLabel" name="label_scratches">
+                      <property name="styleSheet">
+                       <string notr="true">color: #A0C8FF; font-size: 10pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>划痕</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="count_scratches">
+                      <property name="styleSheet">
+                       <string notr="true">color: white; font-size: 13pt; font-weight: bold;</string>
+                      </property>
+                      <property name="text">
+                       <string>0</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
                   </widget>
                  </item>
                 </layout>

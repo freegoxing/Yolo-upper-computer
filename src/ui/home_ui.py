@@ -833,6 +833,154 @@ class Ui_MainWindow(object):
 
         self.main_content_cam.addWidget(self.Result_QF_cam)
 
+        self.Defect_QF_cam = QFrame(self.home)
+        self.Defect_QF_cam.setObjectName(u"Defect_QF_cam")
+        self.Defect_QF_cam.setMinimumSize(QSize(0, 70))
+        self.Defect_QF_cam.setMaximumSize(QSize(16777215, 70))
+        self.Defect_QF_cam.setStyleSheet(u"QFrame#Defect_QF_cam {\n"
+"    background-color: rgba(56, 66, 82, 100);\n"
+"    border: 1px solid rgba(160, 200, 255, 30);\n"
+"    border-radius: 10px;\n"
+"}")
+        self.defect_layout = QHBoxLayout(self.Defect_QF_cam)
+        self.defect_layout.setSpacing(10)
+        self.defect_layout.setObjectName(u"defect_layout")
+        self.defect_layout.setContentsMargins(10, 5, 10, 5)
+        self.card_crazing = QFrame(self.Defect_QF_cam)
+        self.card_crazing.setObjectName(u"card_crazing")
+        self.card_crazing.setStyleSheet(u"QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }")
+        self.v_layout_crazing = QVBoxLayout(self.card_crazing)
+        self.v_layout_crazing.setObjectName(u"v_layout_crazing")
+        self.label_crazing = QLabel(self.card_crazing)
+        self.label_crazing.setObjectName(u"label_crazing")
+        self.label_crazing.setStyleSheet(u"color: #A0C8FF; font-size: 10pt; font-weight: bold;")
+        self.label_crazing.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_crazing.addWidget(self.label_crazing)
+
+        self.count_crazing = QLabel(self.card_crazing)
+        self.count_crazing.setObjectName(u"count_crazing")
+        self.count_crazing.setStyleSheet(u"color: white; font-size: 13pt; font-weight: bold;")
+        self.count_crazing.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_crazing.addWidget(self.count_crazing)
+
+
+        self.defect_layout.addWidget(self.card_crazing)
+
+        self.card_inclusion = QFrame(self.Defect_QF_cam)
+        self.card_inclusion.setObjectName(u"card_inclusion")
+        self.card_inclusion.setStyleSheet(u"QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }")
+        self.v_layout_inclusion = QVBoxLayout(self.card_inclusion)
+        self.v_layout_inclusion.setObjectName(u"v_layout_inclusion")
+        self.label_inclusion = QLabel(self.card_inclusion)
+        self.label_inclusion.setObjectName(u"label_inclusion")
+        self.label_inclusion.setStyleSheet(u"color: #A0C8FF; font-size: 10pt; font-weight: bold;")
+        self.label_inclusion.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_inclusion.addWidget(self.label_inclusion)
+
+        self.count_inclusion = QLabel(self.card_inclusion)
+        self.count_inclusion.setObjectName(u"count_inclusion")
+        self.count_inclusion.setStyleSheet(u"color: white; font-size: 13pt; font-weight: bold;")
+        self.count_inclusion.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_inclusion.addWidget(self.count_inclusion)
+
+
+        self.defect_layout.addWidget(self.card_inclusion)
+
+        self.card_patches = QFrame(self.Defect_QF_cam)
+        self.card_patches.setObjectName(u"card_patches")
+        self.card_patches.setStyleSheet(u"QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }")
+        self.v_layout_patches = QVBoxLayout(self.card_patches)
+        self.v_layout_patches.setObjectName(u"v_layout_patches")
+        self.label_patches = QLabel(self.card_patches)
+        self.label_patches.setObjectName(u"label_patches")
+        self.label_patches.setStyleSheet(u"color: #A0C8FF; font-size: 10pt; font-weight: bold;")
+        self.label_patches.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_patches.addWidget(self.label_patches)
+
+        self.count_patches = QLabel(self.card_patches)
+        self.count_patches.setObjectName(u"count_patches")
+        self.count_patches.setStyleSheet(u"color: white; font-size: 13pt; font-weight: bold;")
+        self.count_patches.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_patches.addWidget(self.count_patches)
+
+
+        self.defect_layout.addWidget(self.card_patches)
+
+        self.card_pitted = QFrame(self.Defect_QF_cam)
+        self.card_pitted.setObjectName(u"card_pitted")
+        self.card_pitted.setStyleSheet(u"QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }")
+        self.v_layout_pitted = QVBoxLayout(self.card_pitted)
+        self.v_layout_pitted.setObjectName(u"v_layout_pitted")
+        self.label_pitted = QLabel(self.card_pitted)
+        self.label_pitted.setObjectName(u"label_pitted")
+        self.label_pitted.setStyleSheet(u"color: #A0C8FF; font-size: 10pt; font-weight: bold;")
+        self.label_pitted.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_pitted.addWidget(self.label_pitted)
+
+        self.count_pitted_surface = QLabel(self.card_pitted)
+        self.count_pitted_surface.setObjectName(u"count_pitted_surface")
+        self.count_pitted_surface.setStyleSheet(u"color: white; font-size: 13pt; font-weight: bold;")
+        self.count_pitted_surface.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_pitted.addWidget(self.count_pitted_surface)
+
+
+        self.defect_layout.addWidget(self.card_pitted)
+
+        self.card_rolled = QFrame(self.Defect_QF_cam)
+        self.card_rolled.setObjectName(u"card_rolled")
+        self.card_rolled.setStyleSheet(u"QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }")
+        self.v_layout_rolled = QVBoxLayout(self.card_rolled)
+        self.v_layout_rolled.setObjectName(u"v_layout_rolled")
+        self.label_rolled = QLabel(self.card_rolled)
+        self.label_rolled.setObjectName(u"label_rolled")
+        self.label_rolled.setStyleSheet(u"color: #A0C8FF; font-size: 10pt; font-weight: bold;")
+        self.label_rolled.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_rolled.addWidget(self.label_rolled)
+
+        self.count_rolled_in_scale = QLabel(self.card_rolled)
+        self.count_rolled_in_scale.setObjectName(u"count_rolled_in_scale")
+        self.count_rolled_in_scale.setStyleSheet(u"color: white; font-size: 13pt; font-weight: bold;")
+        self.count_rolled_in_scale.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_rolled.addWidget(self.count_rolled_in_scale)
+
+
+        self.defect_layout.addWidget(self.card_rolled)
+
+        self.card_scratches = QFrame(self.Defect_QF_cam)
+        self.card_scratches.setObjectName(u"card_scratches")
+        self.card_scratches.setStyleSheet(u"QFrame { background-color: rgba(70, 80, 100, 120); border: 1px solid rgba(160, 200, 255, 40); border-radius: 6px; }")
+        self.v_layout_scratches = QVBoxLayout(self.card_scratches)
+        self.v_layout_scratches.setObjectName(u"v_layout_scratches")
+        self.label_scratches = QLabel(self.card_scratches)
+        self.label_scratches.setObjectName(u"label_scratches")
+        self.label_scratches.setStyleSheet(u"color: #A0C8FF; font-size: 10pt; font-weight: bold;")
+        self.label_scratches.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_scratches.addWidget(self.label_scratches)
+
+        self.count_scratches = QLabel(self.card_scratches)
+        self.count_scratches.setObjectName(u"count_scratches")
+        self.count_scratches.setStyleSheet(u"color: white; font-size: 13pt; font-weight: bold;")
+        self.count_scratches.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.v_layout_scratches.addWidget(self.count_scratches)
+
+
+        self.defect_layout.addWidget(self.card_scratches)
+
+
+        self.main_content_cam.addWidget(self.Defect_QF_cam)
+
         self.Pause_QF_cam = QFrame(self.home)
         self.Pause_QF_cam.setObjectName(u"Pause_QF_cam")
         self.Pause_QF_cam.setMinimumSize(QSize(0, 30))
@@ -1592,10 +1740,22 @@ class Ui_MainWindow(object):
         self.Class_num_cam.setText("")
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"\u6bcf\u79d2\u5e27\u6570", None))
         self.fps_label_cam.setText("")
-        self.label_10.setText(QCoreApplication.translate("MainWindow", u"\u7f3a\u9677\u7c7b\u578b", None))
+        self.label_10.setText(QCoreApplication.translate("MainWindow", u"\u7f3a\u9677\u603b\u6570", None))
         self.Target_num_cam.setText("")
         self.pre_cam.setText("")
         self.res_cam.setText("")
+        self.label_crazing.setText(QCoreApplication.translate("MainWindow", u"\u9f9f\u88c2", None))
+        self.count_crazing.setText(QCoreApplication.translate("MainWindow", u"0", None))
+        self.label_inclusion.setText(QCoreApplication.translate("MainWindow", u"\u5939\u6742", None))
+        self.count_inclusion.setText(QCoreApplication.translate("MainWindow", u"0", None))
+        self.label_patches.setText(QCoreApplication.translate("MainWindow", u"\u6591\u5757", None))
+        self.count_patches.setText(QCoreApplication.translate("MainWindow", u"0", None))
+        self.label_pitted.setText(QCoreApplication.translate("MainWindow", u"\u70b9\u8680", None))
+        self.count_pitted_surface.setText(QCoreApplication.translate("MainWindow", u"0", None))
+        self.label_rolled.setText(QCoreApplication.translate("MainWindow", u"\u6c27\u5316\u76ae", None))
+        self.count_rolled_in_scale.setText(QCoreApplication.translate("MainWindow", u"0", None))
+        self.label_scratches.setText(QCoreApplication.translate("MainWindow", u"\u5212\u75d5", None))
+        self.count_scratches.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.run_button_cam.setText("")
         self.stop_button_cam.setText("")
         self.label_cam.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
