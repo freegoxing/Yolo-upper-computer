@@ -1,4 +1,3 @@
-import cv2
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QImage
 from ultralytics import YOLO
@@ -26,11 +25,11 @@ class YoloThread(QThread):
         self.is_running = True
         self.conf_threshold = CONF_THRESHOLD
         self.iou_threshold = IOU_THRESHOLD
-        self.device = 'intel:gpu'  # 默认设备
+        self.device = "intel:gpu"  # 默认设备
 
     def load_model(self, model_path):
         try:
-            self.model = YOLO(model_path, task='detect')
+            self.model = YOLO(model_path, task="detect")
             return True
         except Exception as e:
             print(f"Error loading model: {e}")
@@ -59,23 +58,23 @@ class YoloThread(QThread):
         """用于处理从 UDP 线程推送过来的单帧数据"""
         if self.model is None or not self.is_running:
             return
-        
+
         # 单帧预测
         results = self.model.predict(
             source=frame_bgr,
             conf=self.conf_threshold,
             iou=self.iou_threshold,
             device=self.device,
-            verbose=False
+            verbose=False,
         )
-        
+
         if results:
             self.emit_result_signals(results[0])
 
     def emit_result_signals(self, result):
         # 1. 获取原始图片和绘制了检测框的图片 (numpy array)
         orig_frame = result.orig_img
-        
+
         # 如果没有检测到目标，直接使用原图，避免 result.plot() 的额外耗时
         if len(result.boxes) > 0:
             annotated_frame = result.plot()
@@ -92,7 +91,7 @@ class YoloThread(QThread):
             ).copy()
 
         raw_q_image = to_qimage(orig_frame)
-        
+
         # 如果没有检测到目标，结果图直接复用原始图的 QImage 引用
         if len(result.boxes) > 0:
             res_q_image = to_qimage(annotated_frame)

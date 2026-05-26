@@ -2,7 +2,6 @@ import socket
 import struct
 import time
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -70,7 +69,7 @@ class UdpReceiverThread(QThread):
         self.bind_ip = bind_ip
         self.port = port
         self.is_running = False
-        
+
         # Default settings from the stable script
         self.channels = 3
         self.rcvbuf = 64 * 1024 * 1024
@@ -82,9 +81,9 @@ class UdpReceiverThread(QThread):
         self.conceal_missing = True
         self.rgb_order = "RGB"
 
-        self.frames: Dict[int, FrameState] = {}
-        self.latest_picseq: Optional[int] = None
-        self.last_good_frame_bytes: Optional[bytes] = None
+        self.frames: dict[int, FrameState] = {}
+        self.latest_picseq: int | None = None
+        self.last_good_frame_bytes: bytes | None = None
         self.sock = None
 
     def stop(self):
@@ -92,15 +91,23 @@ class UdpReceiverThread(QThread):
         self.wait()
 
     def make_initial_buffer(self, total: int) -> bytearray:
-        if self.conceal_missing and self.last_good_frame_bytes is not None and len(self.last_good_frame_bytes) == total:
+        if (
+            self.conceal_missing
+            and self.last_good_frame_bytes is not None
+            and len(self.last_good_frame_bytes) == total
+        ):
             return bytearray(self.last_good_frame_bytes)
         return bytearray(total)
 
-    def parse_packet(self, data: bytes) -> Optional[Tuple[int, int, int, int, int, int, int, int, bytes]]:
+    def parse_packet(
+        self, data: bytes
+    ) -> tuple[int, int, int, int, int, int, int, int, bytes] | None:
         if len(data) < HEADER_LEN:
             return None
         try:
-            magic, width, height, total, offset, picseq, framseq, framesize = struct.unpack("<8I", data[:HEADER_LEN])
+            magic, width, height, total, offset, picseq, framseq, framesize = (
+                struct.unpack("<8I", data[:HEADER_LEN])
+            )
         except struct.error:
             return None
         if magic != MAGIC:
@@ -110,7 +117,9 @@ class UdpReceiverThread(QThread):
             return None
         return magic, width, height, total, offset, picseq, framseq, framesize, payload
 
-    def get_or_create_frame(self, picseq: int, width: int, height: int, total: int, framesize: int) -> FrameState:
+    def get_or_create_frame(
+        self, picseq: int, width: int, height: int, total: int, framesize: int
+    ) -> FrameState:
         if picseq not in self.frames:
             self.frames[picseq] = FrameState(
                 picseq=picseq,
@@ -130,15 +139,17 @@ class UdpReceiverThread(QThread):
         if frame is None:
             return
         try:
-            arr_rgb = np.frombuffer(frame.buf, dtype=np.uint8).reshape((frame.height, frame.width, frame.channels))
+            arr_rgb = np.frombuffer(frame.buf, dtype=np.uint8).reshape(
+                (frame.height, frame.width, frame.channels)
+            )
             if self.rgb_order.upper() == "RGB":
                 arr_bgr = cv2.cvtColor(arr_rgb, cv2.COLOR_RGB2BGR)
             else:
                 arr_bgr = arr_rgb
-            
+
             if frame.is_complete:
                 self.last_good_frame_bytes = bytes(frame.buf)
-            
+
             self.frame_ready.emit(arr_bgr)
         except Exception as e:
             print(f"Frame reassembly error: {e}")
@@ -147,7 +158,11 @@ class UdpReceiverThread(QThread):
         if not self.frames:
             return
         now = time.time()
-        old_by_timeout = [pic for pic, st in self.frames.items() if now - st.last_time >= self.frame_timeout]
+        old_by_timeout = [
+            pic
+            for pic, st in self.frames.items()
+            if now - st.last_time >= self.frame_timeout
+        ]
         for pic in sorted(old_by_timeout):
             self.finish_frame(pic)
         if not self.frames or self.latest_picseq is None:
@@ -155,7 +170,11 @@ class UdpReceiverThread(QThread):
         while len(self.frames) > self.max_active_frames:
             oldest = min(self.frames.keys())
             self.finish_frame(oldest)
-        old_by_lag = [pic for pic in self.frames.keys() if self.latest_picseq - pic > self.max_frame_lag]
+        old_by_lag = [
+            pic
+            for pic in self.frames.keys()
+            if self.latest_picseq - pic > self.max_frame_lag
+        ]
         for pic in sorted(old_by_lag):
             self.finish_frame(pic)
 
@@ -175,20 +194,24 @@ class UdpReceiverThread(QThread):
                 data, addr = self.sock.recvfrom(self.max_datagram)
                 parsed = self.parse_packet(data)
                 if parsed:
-                    _, width, height, total, offset, picseq, _, framesize, payload = parsed
-                    frame = self.get_or_create_frame(picseq, width, height, total, framesize)
+                    _, width, height, total, offset, picseq, _, framesize, payload = (
+                        parsed
+                    )
+                    frame = self.get_or_create_frame(
+                        picseq, width, height, total, framesize
+                    )
                     frame.add_packet(offset, payload)
                     if frame.is_complete:
                         self.finish_frame(picseq)
                 self.flush_old_frames()
-            except socket.timeout:
+            except TimeoutError:
                 self.flush_old_frames()
                 continue
             except Exception as e:
                 if self.is_running:
                     print(f"UDP Recv Error: {e}")
                 break
-        
+
         if self.sock:
             self.sock.close()
             self.sock = None

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 udp_linux_probe.py
 先用它判断 Linux 是否能收到 FPGA 发来的 UDP 包。
@@ -11,6 +10,7 @@ import struct
 import time
 
 MAGIC = 0xAA0055FF
+
 
 def main():
     p = argparse.ArgumentParser()
@@ -34,14 +34,16 @@ def main():
     while n < args.count:
         try:
             data, addr = sock.recvfrom(4096)
-        except socket.timeout:
+        except TimeoutError:
             print(f"[TIMEOUT] {args.timeout}s 内没有收到 UDP 包。")
             print("建议执行：sudo tcpdump -i 你的网卡名 -n 'arp or udp port 6001'")
             continue
 
         n += 1
         if len(data) >= 32:
-            magic, width, height, total, offset, picseq, framseq, framesize = struct.unpack("<8I", data[:32])
+            magic, width, height, total, offset, picseq, framseq, framesize = (
+                struct.unpack("<8I", data[:32])
+            )
             print(
                 f"#{n:03d} from={addr} len={len(data)} "
                 f"magic=0x{magic:08X} width={width} height={height} total={total} "
@@ -53,7 +55,8 @@ def main():
             print(f"#{n:03d} from={addr} len={len(data)} too short")
 
     elapsed = max(time.time() - t0, 1e-6)
-    print(f"[DONE] received={n}, avg_rate={n/elapsed:.1f} packets/s")
+    print(f"[DONE] received={n}, avg_rate={n / elapsed:.1f} packets/s")
+
 
 if __name__ == "__main__":
     main()

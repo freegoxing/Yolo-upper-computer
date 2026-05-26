@@ -10,9 +10,9 @@ sys.path.append(os.path.join(current_dir, "ui"))
 
 from config.yolo_config import CONF_THRESHOLD, DEFAULT_MODEL_PATH, IOU_THRESHOLD
 from ui.home_ui import Ui_MainWindow
+from utils.udp_thread import UdpReceiverThread
 from utils.ui_functions import UIFunctions
 from utils.yolo_thread import YoloThread
-from utils.udp_thread import UdpReceiverThread
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -43,7 +43,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 3. 界面交互
         self.init_thresholds()
-        
+
         # 绑定源切换按钮
         self.src_file_button.clicked.connect(lambda: self.select_source("file"))
         self.src_cam_button.clicked.connect(lambda: self.select_source("camera"))
@@ -55,7 +55,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 设置默认值
         self.model_path = DEFAULT_MODEL_PATH
-        self.current_source_type = "file" # 默认模式
+        self.current_source_type = "file"  # 默认模式
         self.test_source = "../test/steel.mp4"
 
     def select_source(self, src_type):
@@ -119,7 +119,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 开始推理
             if self.yolo_thread.load_model(self.model_path):
                 self.yolo_thread.is_running = True
-                
+
                 if self.current_source_type == "udp":
                     # UDP 模式：启动 UDP 接收，YOLO 线程只负责处理信号（不进入 run 循环）
                     self.udp_thread.start()
@@ -129,7 +129,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.yolo_thread.source = self.test_source
                     self.yolo_thread.start()
                     self.status_bar.setText(f"Inference Started: {self.test_source}")
-                
+
                 self.run_button_cam.setToolTip("Stop")
         else:
             # 停止推理

@@ -3,7 +3,7 @@ import os
 # ==================== 模型配置 ====================
 # 默认模型路径
 DEFAULT_MODEL_PATH = os.path.join(
-    os.path.dirname(__file__), "..", "..","models", "best_openvino_model"
+    os.path.dirname(__file__), "..", "..", "models", "best_openvino_model"
 )
 
 # 类别名称（针对 NEU-DET 6类数据）

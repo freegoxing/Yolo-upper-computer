@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 fpga_udp_video_receiver_linux.py
 
@@ -24,7 +23,6 @@ import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 try:
     import cv2
@@ -47,7 +45,7 @@ MAGIC = 0xAA0055FF
 HEADER_LEN = 32
 
 
-def run_cmd(cmd: List[str], timeout: float = 3.0) -> Tuple[int, str, str]:
+def run_cmd(cmd: list[str], timeout: float = 3.0) -> tuple[int, str, str]:
     try:
         p = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
         return p.returncode, p.stdout.strip(), p.stderr.strip()
@@ -59,7 +57,7 @@ def run_cmd(cmd: List[str], timeout: float = 3.0) -> Tuple[int, str, str]:
         return 1, "", str(e)
 
 
-def read_file(path: str) -> Optional[str]:
+def read_file(path: str) -> str | None:
     try:
         return Path(path).read_text(encoding="utf-8").strip()
     except Exception:
@@ -75,7 +73,11 @@ def linux_preflight(args) -> None:
     print(f"DISPLAY             : {os.environ.get('DISPLAY') or '<empty>'}")
     print(f"WAYLAND_DISPLAY     : {os.environ.get('WAYLAND_DISPLAY') or '<empty>'}")
 
-    if not args.no_window and not os.environ.get("DISPLAY") and not os.environ.get("WAYLAND_DISPLAY"):
+    if (
+        not args.no_window
+        and not os.environ.get("DISPLAY")
+        and not os.environ.get("WAYLAND_DISPLAY")
+    ):
         print("[WARN] 当前没有图形显示环境，建议使用 --no-window。")
 
     print("\n[网卡列表：ip -br addr]")
@@ -92,10 +94,14 @@ def linux_preflight(args) -> None:
         speed = read_file(f"/sys/class/net/{args.iface}/speed")
         print(f"operstate           : {operstate or '<unknown>'}")
         print(f"carrier             : {carrier or '<unknown>'}")
-        print(f"speed               : {(speed + ' Mb/s') if speed and speed != '-1' else '<unknown>'}")
+        print(
+            f"speed               : {(speed + ' Mb/s') if speed and speed != '-1' else '<unknown>'}"
+        )
 
         if carrier == "0":
-            print("[WARN] carrier=0，物理链路没有起来。检查网线、FPGA 上电、网口灯、PHY 复位。")
+            print(
+                "[WARN] carrier=0，物理链路没有起来。检查网线、FPGA 上电、网口灯、PHY 复位。"
+            )
         if speed and speed not in ("-1", "1000"):
             print("[WARN] 当前不是千兆链路。视频 UDP 高速传输建议 1000Mb/s。")
 
@@ -201,7 +207,7 @@ class FrameState:
             self.duplicate_packets += 1
             return False
 
-        self.buf[offset:end] = payload[:end - offset]
+        self.buf[offset:end] = payload[: end - offset]
         self.received[pkt_idx] = 1
         self.got_packets += 1
         return True
@@ -211,13 +217,17 @@ class UdpVideoReceiverLinux:
     def __init__(self, args):
         self.args = args
 
-        if not args.no_window and not os.environ.get("DISPLAY") and not os.environ.get("WAYLAND_DISPLAY"):
+        if (
+            not args.no_window
+            and not os.environ.get("DISPLAY")
+            and not os.environ.get("WAYLAND_DISPLAY")
+        ):
             print("[WARN] 没有检测到 DISPLAY/WAYLAND_DISPLAY，自动切换为 --no-window。")
             self.args.no_window = True
 
-        self.frames: Dict[int, FrameState] = {}
-        self.latest_picseq: Optional[int] = None
-        self.last_good_frame_bytes: Optional[bytes] = None
+        self.frames: dict[int, FrameState] = {}
+        self.latest_picseq: int | None = None
+        self.last_good_frame_bytes: bytes | None = None
 
         self.total_udp_packets = 0
         self.total_video_packets = 0
@@ -238,7 +248,7 @@ class UdpVideoReceiverLinux:
         self.save_dir = Path(args.save_dir)
         self.save_dir.mkdir(parents=True, exist_ok=True)
         self.next_save_gap = random.randint(args.random_min_gap, args.random_max_gap)
-        self.last_display_bgr: Optional[np.ndarray] = None
+        self.last_display_bgr: np.ndarray | None = None
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -247,10 +257,16 @@ class UdpVideoReceiverLinux:
                 print("[WARN] --bind-device 需要同时指定 --iface，已忽略。")
             else:
                 try:
-                    self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE, args.iface.encode() + b"\0")
+                    self.sock.setsockopt(
+                        socket.SOL_SOCKET,
+                        socket.SO_BINDTODEVICE,
+                        args.iface.encode() + b"\0",
+                    )
                     print(f"[INFO] Socket 已绑定到网卡：{args.iface}")
                 except PermissionError:
-                    print("[WARN] SO_BINDTODEVICE 权限不足。可用 sudo 运行，或去掉 --bind-device。")
+                    print(
+                        "[WARN] SO_BINDTODEVICE 权限不足。可用 sudo 运行，或去掉 --bind-device。"
+                    )
                 except Exception as e:
                     print(f"[WARN] SO_BINDTODEVICE 失败：{e}")
 
@@ -266,10 +282,18 @@ class UdpVideoReceiverLinux:
         print(f"[INFO] Listening on {args.bind_ip}:{args.port}")
         print(f"[INFO] SO_RCVBUF requested={args.rcvbuf}, actual={actual_buf}")
         print(f"[INFO] Save dir: {self.save_dir.resolve()}")
-        print("[INFO] q 退出，s 手动保存当前帧。" if not args.no_window else "[INFO] --no-window 模式，Ctrl+C 退出。")
+        print(
+            "[INFO] q 退出，s 手动保存当前帧。"
+            if not args.no_window
+            else "[INFO] --no-window 模式，Ctrl+C 退出。"
+        )
 
     def make_initial_buffer(self, total: int) -> bytearray:
-        if self.args.conceal_missing and self.last_good_frame_bytes is not None and len(self.last_good_frame_bytes) == total:
+        if (
+            self.args.conceal_missing
+            and self.last_good_frame_bytes is not None
+            and len(self.last_good_frame_bytes) == total
+        ):
             return bytearray(self.last_good_frame_bytes)
         return bytearray(total)
 
@@ -281,7 +305,9 @@ class UdpVideoReceiverLinux:
             return None
 
         try:
-            magic, width, height, total, offset, picseq, framseq, framesize = struct.unpack("<8I", data[:HEADER_LEN])
+            magic, width, height, total, offset, picseq, framseq, framesize = (
+                struct.unpack("<8I", data[:HEADER_LEN])
+            )
         except struct.error:
             self.total_bad_len += 1
             return None
@@ -316,7 +342,9 @@ class UdpVideoReceiverLinux:
 
         return width, height, total, offset, picseq, framseq, framesize, payload
 
-    def get_frame(self, picseq: int, width: int, height: int, total: int, framesize: int) -> FrameState:
+    def get_frame(
+        self, picseq: int, width: int, height: int, total: int, framesize: int
+    ) -> FrameState:
         if picseq not in self.frames:
             self.frames[picseq] = FrameState(
                 picseq=picseq,
@@ -348,9 +376,13 @@ class UdpVideoReceiverLinux:
         self.total_bad_offset += frame.bad_offset_packets
 
         try:
-            arr_rgb = np.frombuffer(frame.buf, dtype=np.uint8).reshape((frame.height, frame.width, frame.channels))
+            arr_rgb = np.frombuffer(frame.buf, dtype=np.uint8).reshape(
+                (frame.height, frame.width, frame.channels)
+            )
         except ValueError:
-            print(f"[WARN] frame reshape failed: pic={frame.picseq}, total={frame.total}")
+            print(
+                f"[WARN] frame reshape failed: pic={frame.picseq}, total={frame.total}"
+            )
             return
 
         if self.args.rgb_order == "RGB":
@@ -368,7 +400,13 @@ class UdpVideoReceiverLinux:
         if not self.args.no_window:
             show = arr_bgr
             if self.args.scale != 1.0:
-                show = cv2.resize(arr_bgr, None, fx=self.args.scale, fy=self.args.scale, interpolation=cv2.INTER_AREA)
+                show = cv2.resize(
+                    arr_bgr,
+                    None,
+                    fx=self.args.scale,
+                    fy=self.args.scale,
+                    interpolation=cv2.INTER_AREA,
+                )
             if self.args.overlay:
                 self.draw_overlay(show, frame, reason)
             cv2.imshow(self.args.window_name, show)
@@ -391,7 +429,16 @@ class UdpVideoReceiverLinux:
         ]
         x, y = 20, 30
         for i, line in enumerate(lines):
-            cv2.putText(img, line, (x, y + 28 * i), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.putText(
+                img,
+                line,
+                (x, y + 28 * i),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.65,
+                (0, 255, 0),
+                2,
+                cv2.LINE_AA,
+            )
 
     def maybe_save_random(self, img_bgr, frame: FrameState) -> None:
         if self.args.save_random <= 0 or self.saved_count >= self.args.save_random:
@@ -403,12 +450,14 @@ class UdpVideoReceiverLinux:
             return
         self.save_frame(img_bgr, frame, manual=False)
         self.saved_count += 1
-        self.next_save_gap = random.randint(self.args.random_min_gap, self.args.random_max_gap)
+        self.next_save_gap = random.randint(
+            self.args.random_min_gap, self.args.random_max_gap
+        )
 
     def save_frame(self, img_bgr, frame: FrameState, manual: bool = False) -> None:
         tag = "manual" if manual else "random"
         ts = time.strftime("%Y%m%d_%H%M%S")
-        name = f"{tag}_pic{frame.picseq}_missing{frame.missing_packets}_dup{frame.duplicate_packets}_{ts}_{int(time.time()*1000)%1000:03d}.png"
+        name = f"{tag}_pic{frame.picseq}_missing{frame.missing_packets}_dup{frame.duplicate_packets}_{ts}_{int(time.time() * 1000) % 1000:03d}.png"
         path = self.save_dir / name
         ok = cv2.imwrite(str(path), img_bgr)
         print(f"[SAVE] {path.resolve()}" if ok else f"[WARN] failed to save: {path}")
@@ -421,8 +470,12 @@ class UdpVideoReceiverLinux:
     def print_frame_stats(self, frame: FrameState, reason: str) -> None:
         if self.args.print_every <= 0:
             return
-        if (self.output_frames % self.args.print_every != 0 and
-                frame.missing_packets == 0 and frame.duplicate_packets == 0 and reason == "complete"):
+        if (
+            self.output_frames % self.args.print_every != 0
+            and frame.missing_packets == 0
+            and frame.duplicate_packets == 0
+            and reason == "complete"
+        ):
             return
         elapsed = max(time.time() - self.start_time, 1e-6)
         fps = self.output_frames / elapsed
@@ -441,7 +494,8 @@ class UdpVideoReceiverLinux:
 
         now = time.time()
         timeout_pics = [
-            pic for pic, st in self.frames.items()
+            pic
+            for pic, st in self.frames.items()
             if now - st.last_time >= self.args.frame_timeout
         ]
         for pic in sorted(timeout_pics):
@@ -453,7 +507,11 @@ class UdpVideoReceiverLinux:
         while len(self.frames) > self.args.max_active_frames:
             self.finish_frame(min(self.frames.keys()), "buffer_limit")
 
-        lag_pics = [pic for pic in self.frames if self.latest_picseq - pic > self.args.max_frame_lag]
+        lag_pics = [
+            pic
+            for pic in self.frames
+            if self.latest_picseq - pic > self.args.max_frame_lag
+        ]
         for pic in sorted(lag_pics):
             self.finish_frame(pic, "frame_lag")
 
@@ -462,7 +520,7 @@ class UdpVideoReceiverLinux:
             while True:
                 try:
                     data, _addr = self.sock.recvfrom(self.args.max_datagram)
-                except socket.timeout:
+                except TimeoutError:
                     self.flush_old_frames()
                     continue
 
@@ -470,7 +528,9 @@ class UdpVideoReceiverLinux:
                 if parsed is None:
                     continue
 
-                width, height, total, offset, picseq, _framseq, framesize, payload = parsed
+                width, height, total, offset, picseq, _framseq, framesize, payload = (
+                    parsed
+                )
                 frame = self.get_frame(picseq, width, height, total, framesize)
                 if frame.add_packet(offset, payload):
                     self.total_video_packets += 1
@@ -517,37 +577,107 @@ class UdpVideoReceiverLinux:
 
 def build_arg_parser():
     p = argparse.ArgumentParser(description="Linux FPGA UDP RGB888 video receiver")
-    p.add_argument("--bind-ip", default="0.0.0.0", help="本地绑定 IP，第一次建议 0.0.0.0。")
-    p.add_argument("--port", type=int, default=6001, help="Linux UDP 接收端口，默认 6001。")
-    p.add_argument("--iface", default="", help="连接 FPGA 的网卡名，例如 enp3s0/eno1/eth0。")
-    p.add_argument("--bind-device", action="store_true", help="强制 socket 绑定到 --iface，通常需要 sudo。")
-    p.add_argument("--preflight", action="store_true", help="运行前打印 Linux 网络和环境自检。")
+    p.add_argument(
+        "--bind-ip", default="0.0.0.0", help="本地绑定 IP，第一次建议 0.0.0.0。"
+    )
+    p.add_argument(
+        "--port", type=int, default=6001, help="Linux UDP 接收端口，默认 6001。"
+    )
+    p.add_argument(
+        "--iface", default="", help="连接 FPGA 的网卡名，例如 enp3s0/eno1/eth0。"
+    )
+    p.add_argument(
+        "--bind-device",
+        action="store_true",
+        help="强制 socket 绑定到 --iface，通常需要 sudo。",
+    )
+    p.add_argument(
+        "--preflight", action="store_true", help="运行前打印 Linux 网络和环境自检。"
+    )
     p.add_argument("--channels", type=int, default=3, help="RGB888 = 3。")
     p.add_argument("--scale", type=float, default=0.5, help="显示缩放比例。")
     p.add_argument("--window-name", default="FPGA UDP Video", help="OpenCV 窗口名。")
-    p.add_argument("--no-window", action="store_true", help="无窗口模式，适合 SSH/无桌面。")
-    p.add_argument("--overlay", action="store_true", default=True, help="窗口叠加统计信息。")
-    p.add_argument("--no-overlay", dest="overlay", action="store_false", help="关闭窗口叠加统计。")
-    p.add_argument("--rgb-order", default="RGB", choices=["RGB", "BGR"], help="颜色顺序，红蓝反了试 BGR。")
-    p.add_argument("--rcvbuf", type=int, default=64 * 1024 * 1024, help="UDP 接收缓冲区。")
+    p.add_argument(
+        "--no-window", action="store_true", help="无窗口模式，适合 SSH/无桌面。"
+    )
+    p.add_argument(
+        "--overlay", action="store_true", default=True, help="窗口叠加统计信息。"
+    )
+    p.add_argument(
+        "--no-overlay", dest="overlay", action="store_false", help="关闭窗口叠加统计。"
+    )
+    p.add_argument(
+        "--rgb-order",
+        default="RGB",
+        choices=["RGB", "BGR"],
+        help="颜色顺序，红蓝反了试 BGR。",
+    )
+    p.add_argument(
+        "--rcvbuf", type=int, default=64 * 1024 * 1024, help="UDP 接收缓冲区。"
+    )
     p.add_argument("--max-datagram", type=int, default=4096, help="recvfrom 最大长度。")
-    p.add_argument("--socket-timeout", type=float, default=0.01, help="socket 超时秒数。")
-    p.add_argument("--expected-datagram", type=int, default=1312, help="期望 UDP 包长度，设 0 不检查。")
-    p.add_argument("--drop-unexpected-datagram", action="store_true", help="长度不符时丢包。")
+    p.add_argument(
+        "--socket-timeout", type=float, default=0.01, help="socket 超时秒数。"
+    )
+    p.add_argument(
+        "--expected-datagram",
+        type=int,
+        default=1312,
+        help="期望 UDP 包长度，设 0 不检查。",
+    )
+    p.add_argument(
+        "--drop-unexpected-datagram", action="store_true", help="长度不符时丢包。"
+    )
     p.add_argument("--frame-timeout", type=float, default=0.20, help="单帧等待超时。")
-    p.add_argument("--max-frame-lag", type=int, default=1, help="允许跨帧乱序的滞后帧数。")
+    p.add_argument(
+        "--max-frame-lag", type=int, default=1, help="允许跨帧乱序的滞后帧数。"
+    )
     p.add_argument("--max-active-frames", type=int, default=3, help="最大活动帧缓存。")
-    p.add_argument("--strict-packet-len", action="store_true", help="要求 payload 长度等于 IMG_FRAMSIZE。")
-    p.add_argument("--strict-dim", action="store_true", help="要求 IMG_TOTAL=width*height*channels。")
-    p.add_argument("--conceal-missing", action="store_true", default=True, help="用上一帧补偿缺包位置。")
-    p.add_argument("--no-conceal-missing", dest="conceal_missing", action="store_false", help="关闭缺包补偿。")
-    p.add_argument("--use-incomplete-as-reference", action="store_true", help="允许不完整帧作为补偿参考。")
-    p.add_argument("--print-every", type=int, default=30, help="每 N 帧打印统计；异常帧会立即打印。")
+    p.add_argument(
+        "--strict-packet-len",
+        action="store_true",
+        help="要求 payload 长度等于 IMG_FRAMSIZE。",
+    )
+    p.add_argument(
+        "--strict-dim",
+        action="store_true",
+        help="要求 IMG_TOTAL=width*height*channels。",
+    )
+    p.add_argument(
+        "--conceal-missing",
+        action="store_true",
+        default=True,
+        help="用上一帧补偿缺包位置。",
+    )
+    p.add_argument(
+        "--no-conceal-missing",
+        dest="conceal_missing",
+        action="store_false",
+        help="关闭缺包补偿。",
+    )
+    p.add_argument(
+        "--use-incomplete-as-reference",
+        action="store_true",
+        help="允许不完整帧作为补偿参考。",
+    )
+    p.add_argument(
+        "--print-every",
+        type=int,
+        default=30,
+        help="每 N 帧打印统计；异常帧会立即打印。",
+    )
     p.add_argument("--save-random", type=int, default=10, help="随机保存 N 张图片。")
     p.add_argument("--save-dir", default="saved_random_frames_linux", help="保存目录。")
     p.add_argument("--random-min-gap", type=int, default=5, help="随机保存最小帧间隔。")
-    p.add_argument("--random-max-gap", type=int, default=60, help="随机保存最大帧间隔。")
-    p.add_argument("--max-save-missing", type=int, default=999999, help="只保存缺包数 <= 该值的帧；0 表示只保存完整帧。")
+    p.add_argument(
+        "--random-max-gap", type=int, default=60, help="随机保存最大帧间隔。"
+    )
+    p.add_argument(
+        "--max-save-missing",
+        type=int,
+        default=999999,
+        help="只保存缺包数 <= 该值的帧；0 表示只保存完整帧。",
+    )
     return p
 
 
