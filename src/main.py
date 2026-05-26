@@ -9,6 +9,7 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(current_dir, "ui"))
 
 from config.yolo_config import (
+    CLASS_NAMES,
     CONF_THRESHOLD,
     DEFAULT_MODEL_PATH,
     IOU_THRESHOLD,
@@ -111,15 +112,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.yolo_thread.iou_threshold = self.iou_spinbox_cam.value()
 
     def setup_defect_stats(self):
-        # 映射 UI 文件中定义的 label 到统计字典
-        self.defect_widgets = {
-            "crazing": self.count_crazing,
-            "inclusion": self.count_inclusion,
-            "patches": self.count_patches,
-            "pitted_surface": self.count_pitted_surface,
-            "rolled-in_scale": self.count_rolled_in_scale,
-            "scratches": self.count_scratches,
-        }
+        # 动态映射 UI 文件中定义的 label 到统计字典
+        self.defect_widgets = {}
+        for name in CLASS_NAMES.values():
+            # 将名称中的 '-' 替换为 '_' 以匹配 UI 属性名 (例如 rolled-in_scale -> count_rolled_in_scale)
+            attr_name = f"count_{name.replace('-', '_')}"
+            if hasattr(self, attr_name):
+                self.defect_widgets[name] = getattr(self, attr_name)
 
     def process_detection_results(self, defects):
         # 1. 重置各类别计数
