@@ -16,8 +16,8 @@ from config.yolo_config import (
 )
 from ui.home_ui import Ui_MainWindow
 from utils.udp_thread import UdpReceiverThread
-from utils.video_thread import VideoReaderThread
 from utils.ui_functions import UIFunctions
+from utils.video_thread import VideoReaderThread
 from utils.yolo_thread import YoloThread
 
 
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.yolo_thread = YoloThread()
         self.yolo_thread.device = "intel:gpu"
         self.udp_thread = UdpReceiverThread()
-        self.video_reader = None # 视频读取线程
+        self.video_reader = None  # 视频读取线程
 
         # 连接 YOLO 信号
         self.yolo_thread.raw_frame_signal.connect(self.update_raw_video_label)
@@ -154,7 +154,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 开始推理
             if self.yolo_thread.load_model(self.model_path):
                 self.yolo_thread.is_running = True
-                self.yolo_thread.start() # 启动推理消费者线程
+                self.yolo_thread.start()  # 启动推理消费者线程
 
                 if self.current_source_type == "udp":
                     self.udp_thread.start()
@@ -163,7 +163,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     # 本地文件、摄像头、RTSP 统一使用 VideoReaderThread
                     self.video_reader = VideoReaderThread(self.test_source)
                     self.video_reader.frame_ready.connect(self.yolo_thread.push_frame)
-                    self.video_reader.finished_signal.connect(lambda: self.run_button_cam.setChecked(False))
+                    self.video_reader.finished_signal.connect(
+                        lambda: self.run_button_cam.setChecked(False)
+                    )
                     self.video_reader.start()
                     self.status_bar.setText(f"Inference Started: {self.test_source}")
 
@@ -175,7 +177,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.udp_thread.stop()
             if self.video_reader and self.video_reader.isRunning():
                 self.video_reader.stop()
-            
+
             self.run_button_cam.setToolTip("Start")
             self.status_bar.setText("Inference Stopped.")
 

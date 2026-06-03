@@ -13,12 +13,12 @@ DATA_CONFIG_PATH = os.path.join(ROOT_DIR, "configs", "neu_det.yaml")
 # 类别名称（针对 NEU-DET 6类数据）
 # 注意：此处的定义应与 configs/neu_det.yaml 中的 names 保持一致
 CLASS_NAMES = {
-    0: "crazing",          # 龟裂
-    1: "inclusion",        # 夹杂物
-    2: "patches",          # 斑块
-    3: "pitted_surface",   # 点蚀面
+    0: "crazing",  # 龟裂
+    1: "inclusion",  # 夹杂物
+    2: "patches",  # 斑块
+    3: "pitted_surface",  # 点蚀面
     4: "rolled-in_scale",  # 压入氧化铁皮
-    5: "scratches",        # 划痕
+    5: "scratches",  # 划痕
 }
 
 # ==================== 默认检测参数 ====================

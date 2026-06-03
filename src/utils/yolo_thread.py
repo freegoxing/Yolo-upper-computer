@@ -1,10 +1,10 @@
+import queue
+
+import cv2
+import numpy as np
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QImage
 from ultralytics import YOLO
-import queue
-import time
-import cv2
-import numpy as np
 
 try:
     from config.yolo_config import CLASS_NAMES, CONF_THRESHOLD, IOU_THRESHOLD
@@ -38,12 +38,13 @@ class YoloThread(QThread):
             self.model = YOLO(model_path, task="detect")
             # 预热模型：使用 numpy 生成全黑背景进行预热，避免文件路径问题
             dummy_img = np.zeros((self.imgsz, self.imgsz, 3), dtype=np.uint8)
-            self.model.predict(source=dummy_img, device=self.device, imgsz=self.imgsz, verbose=False)
+            self.model.predict(
+                source=dummy_img, device=self.device, imgsz=self.imgsz, verbose=False
+            )
             return True
         except Exception as e:
             print(f"Error loading model: {e}")
             return False
-
 
     def push_frame(self, frame_bgr):
         """供外部（如 UDP 线程）推送帧到队列"""
@@ -55,14 +56,14 @@ class YoloThread(QThread):
             return
 
         self.is_running = True
-        
+
         # 统一使用消费者模式：从队列中获取帧进行预测
         # 无论是来自本地视频线程、UDP 线程还是摄像头，都通过 push_frame 喂入
         while self.is_running:
             try:
                 # 使用 timeout 避免死锁，允许检查 is_running 状态
                 frame_bgr = self.frame_queue.get(timeout=0.1)
-                
+
                 results = self.model.predict(
                     source=frame_bgr,
                     conf=self.conf_threshold,
@@ -72,10 +73,10 @@ class YoloThread(QThread):
                     half=True,
                     verbose=False,
                 )
-                
+
                 if results and self.is_running:
                     self.emit_result_signals(results[0])
-                
+
                 self.frame_queue.task_done()
             except queue.Empty:
                 continue
@@ -86,23 +87,31 @@ class YoloThread(QThread):
     def emit_result_signals(self, result):
         # 1. 获取原始图片和绘制了检测框的图片 (numpy array)
         orig_frame = result.orig_img
-        
+
         # --- 性能优化：缩放图像以减少 UI 传输和渲染开销 ---
         # 即使原始视频是 1080p，UI 标签通常只有几百像素，缩放到 640 或 800 足矣
-        target_ui_width = 800 
+        target_ui_width = 800
         h, w = orig_frame.shape[:2]
         if w > target_ui_width:
             scale = target_ui_width / w
             target_ui_height = int(h * scale)
             # 使用 INTER_LINEAR 兼顾速度和质量
-            orig_frame_ui = cv2.resize(orig_frame, (target_ui_width, target_ui_height), interpolation=cv2.INTER_LINEAR)
+            orig_frame_ui = cv2.resize(
+                orig_frame,
+                (target_ui_width, target_ui_height),
+                interpolation=cv2.INTER_LINEAR,
+            )
         else:
             orig_frame_ui = orig_frame
 
         if len(result.boxes) > 0:
             annotated_frame = result.plot()
             if w > target_ui_width:
-                annotated_frame_ui = cv2.resize(annotated_frame, (target_ui_width, target_ui_height), interpolation=cv2.INTER_LINEAR)
+                annotated_frame_ui = cv2.resize(
+                    annotated_frame,
+                    (target_ui_width, target_ui_height),
+                    interpolation=cv2.INTER_LINEAR,
+                )
             else:
                 annotated_frame_ui = annotated_frame
         else:
