@@ -16,6 +16,7 @@ from config.yolo_config import (
 )
 from ui.home_ui import Ui_MainWindow
 from utils.udp_thread import UdpReceiverThread
+from utils.video_thread import VideoReaderThread
 from utils.ui_functions import UIFunctions
 from utils.yolo_thread import YoloThread
 
@@ -35,10 +36,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 2. 缺陷统计 UI 设置
         self.setup_defect_stats()
 
+        # 优化：允许 QLabel 自动缩放图片，提高显示效率
+        self.pre_cam.setScaledContents(True)
+        self.res_cam.setScaledContents(True)
+
         # 3. 初始化线程
         self.yolo_thread = YoloThread()
         self.yolo_thread.device = "intel:gpu"
         self.udp_thread = UdpReceiverThread()
+        self.video_reader = None # 视频读取线程
 
         # 连接 YOLO 信号
         self.yolo_thread.raw_frame_signal.connect(self.update_raw_video_label)
@@ -46,8 +52,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.yolo_thread.stats_signal.connect(self.update_stats)
         self.yolo_thread.results_signal.connect(self.process_detection_results)
 
-        # 连接 UDP 信号到 YOLO
-        self.udp_thread.frame_ready.connect(self.yolo_thread.process_single_frame)
+        # 统一连接：所有视频源都喂给 YOLO 队列
+        self.udp_thread.frame_ready.connect(self.yolo_thread.push_frame)
 
         # 3. 界面交互
         self.init_thresholds()
@@ -148,15 +154,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 开始推理
             if self.yolo_thread.load_model(self.model_path):
                 self.yolo_thread.is_running = True
+                self.yolo_thread.start() # 启动推理消费者线程
 
                 if self.current_source_type == "udp":
-                    # UDP 模式：启动 UDP 接收，YOLO 线程只负责处理信号（不进入 run 循环）
                     self.udp_thread.start()
                     self.status_bar.setText("UDP Inference Started...")
                 else:
-                    # 标准模式：YOLO 线程自带 run 循环
-                    self.yolo_thread.source = self.test_source
-                    self.yolo_thread.start()
+                    # 本地文件、摄像头、RTSP 统一使用 VideoReaderThread
+                    self.video_reader = VideoReaderThread(self.test_source)
+                    self.video_reader.frame_ready.connect(self.yolo_thread.push_frame)
+                    self.video_reader.finished_signal.connect(lambda: self.run_button_cam.setChecked(False))
+                    self.video_reader.start()
                     self.status_bar.setText(f"Inference Started: {self.test_source}")
 
                 self.run_button_cam.setToolTip("Stop")
@@ -165,6 +173,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.yolo_thread.stop()
             if self.udp_thread.isRunning():
                 self.udp_thread.stop()
+            if self.video_reader and self.video_reader.isRunning():
+                self.video_reader.stop()
+            
             self.run_button_cam.setToolTip("Start")
             self.status_bar.setText("Inference Stopped.")
 
@@ -175,10 +186,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.display_image(q_image, self.res_cam)
 
     def display_image(self, q_image, label):
-        # 将 QImage 缩放到 label 的大小并显示
-        pixmap = QPixmap.fromImage(q_image)
-        scaled_pixmap = pixmap.scaled(label.size())
-        label.setPixmap(scaled_pixmap)
+        # 直接显示，利用 setScaledContents(True) 实现快速缩放
+        label.setPixmap(QPixmap.fromImage(q_image))
 
     def update_stats(self, classes, targets, fps):
         # 更新界面上的数据卡片
@@ -193,6 +202,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 确保窗口关闭时线程也停止
         self.yolo_thread.stop()
         self.udp_thread.stop()
+        if self.video_reader:
+            self.video_reader.stop()
         event.accept()
 
 

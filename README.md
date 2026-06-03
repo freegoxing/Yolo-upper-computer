@@ -111,20 +111,27 @@ python src/main.py
 
 ---
 
-## 6. 模型转换 (OpenVINO)
+## 6. 模型转换与量化 (OpenVINO)
 
-为了在 Intel iGPU/NPU 上获得最佳推理性能，建议将 PyTorch 的 `.pt` 权重文件转换为 OpenVINO 格式（FP16）。
+为了在 Intel iGPU/NPU 上获得最佳推理性能，建议将 PyTorch 的 `.pt` 权重文件转换为 OpenVINO 格式。本系统支持 **FP16** 和 **INT8** 两种精度。
 
 ### 6.1 转换操作
-在项目虚拟环境下运行：
+在项目环境下运行导出工具：
+
 ```bash
-python tools/model_export/export_openvino.py <你的模型路径>.pt
+# 1. 导出为标准 FP16 格式 (推荐用于 iGPU)
+uv run python tools/model_export/export_openvino.py models/best.pt
+
+# 2. 导出为 INT8 量化格式 (极致性能，需校准数据集)
+uv run python tools/model_export/export_openvino.py models/best.pt --int8 --data configs/neu_det.yaml
 ```
 
-### 6.2 说明
-*   **输出**：脚本将自动在原模型目录下生成一个 OpenVINO 格式文件夹（包含 `.xml` 和 `.bin`）。
-*   **优化**：默认开启 `half=True` (FP16)，适配 Intel 异构加速。
-*   **加载**：在上位机界面选择模型时，直接指向转换生成的文件夹或其内部的 `.xml` 文件即可。
+### 6.2 关键参数说明
+*   **--int8**: 启用 INT8 量化。在 Intel 平台上可进一步提升推理速度并降低功耗。
+*   **--data**: 指定数据集配置文件（`.yaml`）。量化过程需要一小部分真实图片（验证集）来计算激活值的分布情况，从而保证量化后的模型精度。
+*   **配置目录**: 所有的量化校准配置建议存放在项目根目录的 `configs/` 文件夹下。
+
+详细说明请参考：`tools/model_export/README.md`。
 
 ---
 

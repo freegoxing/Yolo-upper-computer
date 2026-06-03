@@ -1,6 +1,10 @@
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QImage
 from ultralytics import YOLO
+import queue
+import time
+import cv2
+import numpy as np
 
 try:
     from config.yolo_config import CLASS_NAMES, CONF_THRESHOLD, IOU_THRESHOLD
@@ -26,75 +30,98 @@ class YoloThread(QThread):
         self.conf_threshold = CONF_THRESHOLD
         self.iou_threshold = IOU_THRESHOLD
         self.device = "intel:gpu"  # 默认设备
+        self.frame_queue = queue.Queue(maxsize=2)  # 用于 UDP 模式的帧队列
+        self.imgsz = 640  # 默认推理尺寸
 
     def load_model(self, model_path):
         try:
             self.model = YOLO(model_path, task="detect")
+            # 预热模型：使用 numpy 生成全黑背景进行预热，避免文件路径问题
+            dummy_img = np.zeros((self.imgsz, self.imgsz, 3), dtype=np.uint8)
+            self.model.predict(source=dummy_img, device=self.device, imgsz=self.imgsz, verbose=False)
             return True
         except Exception as e:
             print(f"Error loading model: {e}")
             return False
 
+
+    def push_frame(self, frame_bgr):
+        """供外部（如 UDP 线程）推送帧到队列"""
+        if not self.frame_queue.full():
+            self.frame_queue.put(frame_bgr)
+
     def run(self):
-        if self.model is None or self.source is None:
+        if self.model is None:
             return
 
-        # 使用 ultralytics 的 stream 模式
-        results = self.model.predict(
-            source=self.source,
-            conf=self.conf_threshold,
-            iou=self.iou_threshold,
-            stream=True,
-            device=self.device,
-            half=True,  # 开启半精度 (FP16)，Intel GPU 提速明显
-        )
-
-        for result in results:
-            if not self.is_running:
-                break
-            self.emit_result_signals(result)
-
-    def process_single_frame(self, frame_bgr):
-        """用于处理从 UDP 线程推送过来的单帧数据"""
-        if self.model is None or not self.is_running:
-            return
-
-        # 单帧预测
-        results = self.model.predict(
-            source=frame_bgr,
-            conf=self.conf_threshold,
-            iou=self.iou_threshold,
-            device=self.device,
-            verbose=False,
-        )
-
-        if results:
-            self.emit_result_signals(results[0])
+        self.is_running = True
+        
+        # 统一使用消费者模式：从队列中获取帧进行预测
+        # 无论是来自本地视频线程、UDP 线程还是摄像头，都通过 push_frame 喂入
+        while self.is_running:
+            try:
+                # 使用 timeout 避免死锁，允许检查 is_running 状态
+                frame_bgr = self.frame_queue.get(timeout=0.1)
+                
+                results = self.model.predict(
+                    source=frame_bgr,
+                    conf=self.conf_threshold,
+                    iou=self.iou_threshold,
+                    device=self.device,
+                    imgsz=self.imgsz,
+                    half=True,
+                    verbose=False,
+                )
+                
+                if results and self.is_running:
+                    self.emit_result_signals(results[0])
+                
+                self.frame_queue.task_done()
+            except queue.Empty:
+                continue
+            except Exception as e:
+                print(f"Inference error: {e}")
+                continue
 
     def emit_result_signals(self, result):
         # 1. 获取原始图片和绘制了检测框的图片 (numpy array)
         orig_frame = result.orig_img
+        
+        # --- 性能优化：缩放图像以减少 UI 传输和渲染开销 ---
+        # 即使原始视频是 1080p，UI 标签通常只有几百像素，缩放到 640 或 800 足矣
+        target_ui_width = 800 
+        h, w = orig_frame.shape[:2]
+        if w > target_ui_width:
+            scale = target_ui_width / w
+            target_ui_height = int(h * scale)
+            # 使用 INTER_LINEAR 兼顾速度和质量
+            orig_frame_ui = cv2.resize(orig_frame, (target_ui_width, target_ui_height), interpolation=cv2.INTER_LINEAR)
+        else:
+            orig_frame_ui = orig_frame
 
-        # 如果没有检测到目标，直接使用原图，避免 result.plot() 的额外耗时
         if len(result.boxes) > 0:
             annotated_frame = result.plot()
+            if w > target_ui_width:
+                annotated_frame_ui = cv2.resize(annotated_frame, (target_ui_width, target_ui_height), interpolation=cv2.INTER_LINEAR)
+            else:
+                annotated_frame_ui = annotated_frame
         else:
-            annotated_frame = orig_frame
+            annotated_frame_ui = orig_frame_ui
 
         # 2. 直接使用 QImage.Format_BGR888 避免 cv2.cvtColor 的 CPU 消耗
         def to_qimage(cv_img):
             h, w, ch = cv_img.shape
             bytes_per_line = ch * w
-            # 使用 Format_BGR888 直接读取 BGR 数据，减少转换开销
+            # 使用 Format_BGR888 直接读取 BGR 数据
             return QImage(
                 cv_img.data, w, h, bytes_per_line, QImage.Format_BGR888
             ).copy()
 
-        raw_q_image = to_qimage(orig_frame)
+        raw_q_image = to_qimage(orig_frame_ui)
 
         # 如果没有检测到目标，结果图直接复用原始图的 QImage 引用
         if len(result.boxes) > 0:
-            res_q_image = to_qimage(annotated_frame)
+            res_q_image = to_qimage(annotated_frame_ui)
         else:
             res_q_image = raw_q_image
 
@@ -126,10 +153,17 @@ class YoloThread(QThread):
         num_classes = len(result.boxes.cls.unique())
         num_targets = len(result.boxes)
         # 获取推理速度 (ms) 并转换为 FPS
-        speed = result.speed["inference"]
+        speed = result.speed["inference"] + result.speed["postprocess"]
         fps = 1000 / speed if speed > 0 else 0
         self.stats_signal.emit(num_classes, num_targets, fps)
 
     def stop(self):
         self.is_running = False
+        # 清空队列
+        while not self.frame_queue.empty():
+            try:
+                self.frame_queue.get_nowait()
+                self.frame_queue.task_done()
+            except queue.Empty:
+                break
         self.wait()
