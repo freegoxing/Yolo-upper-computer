@@ -49,7 +49,6 @@ if [ "$1" == "--setup" ]; then
     sudo sysctl -w net.core.rmem_max=134217728
     sudo sysctl -w net.core.rmem_default=134217728
     echo "Network configuration applied successfully."
-    exit 0
 fi
 
 # Main Application Execution

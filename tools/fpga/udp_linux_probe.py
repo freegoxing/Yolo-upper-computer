@@ -19,14 +19,38 @@ def main():
     p.add_argument("--count", type=int, default=20)
     p.add_argument("--timeout", type=float, default=3.0)
     p.add_argument("--rcvbuf", type=int, default=16 * 1024 * 1024)
+    p.add_argument("--iface", default="", help="可选：网卡名，例如 enx00e04c5e3060。")
+    p.add_argument(
+        "--bind-device",
+        action="store_true",
+        help="可选：使用 SO_BINDTODEVICE 绑定到 --iface，需要 sudo 或 CAP_NET_RAW。",
+    )
     args = p.parse_args()
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    if args.bind_device:
+        if not args.iface:
+            print("[WARN] --bind-device 需要同时指定 --iface，已忽略。")
+        else:
+            try:
+                sock.setsockopt(
+                    socket.SOL_SOCKET,
+                    socket.SO_BINDTODEVICE,
+                    args.iface.encode() + b"\0",
+                )
+                print(f"[INFO] Socket 已绑定到网卡：{args.iface}")
+            except PermissionError:
+                print("[WARN] SO_BINDTODEVICE 权限不足。请用 sudo 运行，或去掉 --bind-device。")
+            except Exception as e:
+                print(f"[WARN] SO_BINDTODEVICE 失败：{e}")
+
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, args.rcvbuf)
     sock.bind((args.bind_ip, args.port))
     sock.settimeout(args.timeout)
 
+    actual_buf = sock.getsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF)
     print(f"[INFO] Listening on {args.bind_ip}:{args.port}")
+    print(f"[INFO] SO_RCVBUF requested={args.rcvbuf}, actual={actual_buf}")
     print("[INFO] Waiting for FPGA UDP packets...")
 
     n = 0
@@ -36,8 +60,18 @@ def main():
             data, addr = sock.recvfrom(4096)
         except TimeoutError:
             print(f"[TIMEOUT] {args.timeout}s 内没有收到 UDP 包。")
-            print("建议执行：sudo tcpdump -i 你的网卡名 -n 'arp or udp port 6001'")
+            print(f"建议执行：sudo tcpdump -i 你的网卡名 -n 'arp or udp port {args.port}'")
+            print(
+                "如果 tcpdump 能看到 UDP 但这里收不到，请检查：\n"
+                "  1) ip addr show 你的网卡名 里是否有 192.168.137.1/24\n"
+                f"  2) sudo ss -lunp | grep ':{args.port}' 是否有其他程序占用端口\n"
+                "  3) sudo nft list ruleset 或 sudo iptables -S 是否丢弃 UDP\n"
+                "  4) sysctl net.ipv4.conf.all.rp_filter net.ipv4.conf.你的网卡名.rp_filter"
+            )
             continue
+        except KeyboardInterrupt:
+            print("\n[INFO] 用户中断。")
+            break
 
         n += 1
         if len(data) >= 32:
